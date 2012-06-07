@@ -1,0 +1,12 @@
+syntax: glob
+Source/Revolution/*.suo
+Source/Revolution/Revolution/obj/**.**
+Source/Revolution/Revolution/bin/**.**
+Source/Revolution/_ReSharper.Revolution/**.**
+Source/Revolution/_ReSharper.Revolution/**.**
+Source/Binaries/**.**
+**.user
+Source/Revolution/_ReSharper.Revolution/JbPdbInfo/520260d9d64287c1504c1a15084d76137c4fa449
+Source/Revolution/_ReSharper.Revolution/JbPdbInfo/4fbf343aeecf35351ee0238f5b80d85fb430ba4d
+Source/Revolution/_ReSharper.Revolution/JbPdbInfo/6fbe0a01f99848536eb4a55c0b49ccef6d15cdc3
+Source/Revolution/_ReSharper.Revolution/JbPdbInfo/edfecc453bb59fe4ad11da3df26afddd8a9681e1
