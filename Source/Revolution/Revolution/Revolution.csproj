@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{68F71B5A-E92F-4871-AC08-EAD426DB51D7}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Revolution</RootNamespace>
+    <AssemblyName>OpenTK Application</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Binaries\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Binaries\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\opentk\Binaries\OpenTK\Debug\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Application.cs" />
+    <Compile Include="Core\ASCIIFileHelper.cs" />
+    <Compile Include="Core\CamMode.cs" />
+    <Compile Include="Core\FileWatcher.cs" />
+    <Compile Include="Core\Grid.cs" />
+    <Compile Include="Core\ICamera.cs" />
+    <Compile Include="Core\InputSystem.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\Common.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\MB2Brush.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\MB2DatFormat.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\MB2Plane.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\MB2Property.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\MB2PropertyType.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\MB2PropertyTypeType.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\MB2Scene.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\MB2VmfC.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\MB2XmlFormat.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\vec3.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\VmfDisplacement.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\VmfEntity.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\VmfFormat.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\VmfParser.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\VmfPointEntity.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\VmfSide.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\VmfSolid.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\VmfSolidEntity.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\VmfWorld.cs" />
+    <Compile Include="Core\Loaders\Microbrush\Includes\XmlUtils.cs" />
+    <Compile Include="Core\Loaders\Microbrush\MicrobrushLoader.cs" />
+    <Compile Include="Core\Polygon.cs" />
+    <Compile Include="Core\QuaternionCamera.cs" />
+    <Compile Include="Core\ShaderBase.cs" />
+    <Compile Include="Core\ShaderProgram.cs" />
+    <Compile Include="Utilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="schema\mb2Scene.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="OpenTK.dll.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
