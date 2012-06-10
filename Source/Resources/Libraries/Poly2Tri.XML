@@ -1,0 +1,616 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Poly2Tri</name>
+    </assembly>
+    <members>
+        <member name="T:Poly2Tri.AdvancingFront">
+            @author Thomas Åhlen (thahlen@gmail.com)
+        </member>
+        <member name="M:Poly2Tri.AdvancingFront.FindSearchNode(System.Double)">
+            <summary>
+            MM:  This seems to be used by LocateNode to guess a position in the implicit linked list of AdvancingFrontNodes near x
+                 Removed an overload that depended on this being exact
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.AdvancingFront.LocateNode(Poly2Tri.TriangulationPoint)">
+            <summary>
+            We use a balancing tree to locate a node smaller or equal to given key value (in theory)
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.AdvancingFront.LocatePoint(Poly2Tri.TriangulationPoint)">
+            <summary>
+            This implementation will use simple node traversal algorithm to find a point on the front
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.P2T.Warmup">
+            <summary>
+            Will do a warmup run to let the JVM optimize the triangulation code -- or would if this were Java --MM
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.TriangulationConstraint.#ctor(Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint)">
+            <summary>
+            Give two points in any order. Will always be ordered so
+            that q.y > p.y and q.x > p.x if same y value 
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweepConstraint.#ctor(Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint)">
+            <summary>
+            Give two points in any order. Will always be ordered so
+            that q.y > p.y and q.x > p.x if same y value 
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.Triangulate(Poly2Tri.DTSweepContext)">
+            <summary>
+            Triangulate simple polygon with holes
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.Sweep(Poly2Tri.DTSweepContext)">
+            <summary>
+            Start sweeping the Y-sorted point set from bottom to top
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.FinalizationConvexHull(Poly2Tri.DTSweepContext)">
+            <summary>
+            If this is a Delaunay Triangulation of a pointset we need to fill so the triangle mesh gets a ConvexHull 
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.TurnAdvancingFrontConvex(Poly2Tri.DTSweepContext,Poly2Tri.AdvancingFrontNode,Poly2Tri.AdvancingFrontNode)">
+            <summary>
+            We will traverse the entire advancing front and fill it to form a convex hull.
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.FinalizationConstraints(Poly2Tri.DTSweepContext)">
+             <summary>
+             NOTE: WORK IN PROGRESS - for now this will just clean out all triangles from
+             inside the outermost holes without paying attention to holes within holes..
+             hence the work in progress :)
+             
+             Removes triangles inside "holes" (that are not inside of other holes already)
+             
+             In the example below, assume that triangle ABC is a user-defined "hole".  Thus
+             any triangles inside it (that aren't inside yet another user-defined hole inside
+             triangle ABC) should get removed.  In this case, since there are no user-defined
+             holes inside ABC, we would remove triangles ADE, BCE, and CDE.  We would also 
+             need to combine the appropriate edges so that we end up with just triangle ABC
+            
+                      E
+             A +------+-----+ B              A +-----------+ B
+                \    /|    /                    \         /
+                 \  / |   /                      \       /
+                D +   |  /        ======>         \     /
+                   \  | /                          \   /
+                    \ |/                            \ /
+                      +                              +
+                      C                              C
+                      
+             </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.PointEvent(Poly2Tri.DTSweepContext,Poly2Tri.TriangulationPoint)">
+            <summary>
+            Find closes node to the left of the new point and
+            create a new triangle. If needed new holes and basins
+            will be filled to.
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.NewFrontTriangle(Poly2Tri.DTSweepContext,Poly2Tri.TriangulationPoint,Poly2Tri.AdvancingFrontNode)">
+            <summary>
+            Creates a new front triangle and legalize it
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.NextFlipPoint(Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint,Poly2Tri.DelaunayTriangle,Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint@)">
+            <summary>
+            When we need to traverse from one triangle to the next we need 
+            the point in current triangle that is the opposite point to the next
+            triangle. 
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.NextFlipTriangle(Poly2Tri.DTSweepContext,Poly2Tri.Orientation,Poly2Tri.DelaunayTriangle,Poly2Tri.DelaunayTriangle,Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint)">
+            <summary>
+            After a flip we have two triangles and know that only one will still be
+            intersecting the edge. So decide which to contiune with and legalize the other
+            </summary>
+            <param name="tcx"></param>
+            <param name="o">should be the result of an TriangulationUtil.orient2d( eq, op, ep )</param>
+            <param name="t">triangle 1</param>
+            <param name="ot">triangle 2</param>
+            <param name="p">a point shared by both triangles</param>
+            <param name="op">another point shared by both triangles</param>
+            <returns>returns the triangle still intersecting the edge</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Poly2Tri.DTSweep.FlipScanEdgeEvent(Poly2Tri.DTSweepContext,Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint,Poly2Tri.DelaunayTriangle,Poly2Tri.DelaunayTriangle,Poly2Tri.TriangulationPoint)" -->
+        <member name="M:Poly2Tri.DTSweep.FillAdvancingFront(Poly2Tri.DTSweepContext,Poly2Tri.AdvancingFrontNode)">
+            <summary>
+            Fills holes in the Advancing Front
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Poly2Tri.DTSweep.FillBasin(Poly2Tri.DTSweepContext,Poly2Tri.AdvancingFrontNode)" -->
+        <member name="M:Poly2Tri.DTSweep.FillBasinReq(Poly2Tri.DTSweepContext,Poly2Tri.AdvancingFrontNode)">
+            <summary>
+            Recursive algorithm to fill a Basin with triangles
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.HoleAngle(Poly2Tri.AdvancingFrontNode)">
+            <summary>
+            ???
+            </summary>
+            <param name="node">middle node</param>
+            <returns>the angle between 3 front nodes</returns>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.BasinAngle(Poly2Tri.AdvancingFrontNode)">
+            <summary>
+            The basin angle is decided against the horizontal line [1,0]
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.Fill(Poly2Tri.DTSweepContext,Poly2Tri.AdvancingFrontNode)">
+            <summary>
+            Adds a triangle to the advancing front to fill a hole.
+            </summary>
+            <param name="tcx"></param>
+            <param name="node">middle node, that is the bottom of the hole</param>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.Legalize(Poly2Tri.DTSweepContext,Poly2Tri.DelaunayTriangle)">
+            <summary>
+            Returns true if triangle was legalized
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DTSweep.RotateTrianglePair(Poly2Tri.DelaunayTriangle,Poly2Tri.TriangulationPoint,Poly2Tri.DelaunayTriangle,Poly2Tri.TriangulationPoint)">
+            <summary>
+            Rotates a triangle pair one vertex CW
+                  n2                    n2
+             P +-----+             P +-----+
+               | t  /|               |\  t |  
+               |   / |               | \   |
+             n1|  /  |n3           n1|  \  |n3
+               | /   |    after CW   |   \ |
+               |/ oT |               | oT \|
+               +-----+ oP            +-----+
+                  n4                    n4
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DelaunayTriangle.MarkNeighbor(Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint,Poly2Tri.DelaunayTriangle)">
+            <summary>
+            Update neighbor pointers
+            </summary>
+            <param name="p1">Point 1 of the shared edge</param>
+            <param name="p2">Point 2 of the shared edge</param>
+            <param name="t">This triangle's new neighbor</param>
+        </member>
+        <member name="M:Poly2Tri.DelaunayTriangle.MarkNeighbor(Poly2Tri.DelaunayTriangle)">
+            <summary>
+            Exhaustive search to update neighbor pointers
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DelaunayTriangle.Clear">
+            <summary>
+            Clears all references to all other triangles and points
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DelaunayTriangle.OppositePoint(Poly2Tri.DelaunayTriangle,Poly2Tri.TriangulationPoint)">
+            <param name="t">Opposite triangle</param>
+            <param name="p">The point in t that isn't shared between the triangles</param>
+        </member>
+        <member name="M:Poly2Tri.DelaunayTriangle.Legalize(Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint)">
+            <summary>
+            Legalize triangle by rotating clockwise around oPoint
+            </summary>
+            <param name="oPoint">The origin point to rotate around</param>
+            <param name="nPoint">???</param>
+        </member>
+        <member name="M:Poly2Tri.DelaunayTriangle.MarkNeighborEdges">
+            <summary>
+            Finalize edge marking
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DelaunayTriangle.MarkConstrainedEdge(Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint)">
+            <summary>
+            Mark edge as constrained
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.DelaunayTriangle.EdgeIndex(Poly2Tri.TriangulationPoint,Poly2Tri.TriangulationPoint)">
+            <summary>
+            Get the index of the neighbor that shares this edge (or -1 if it isn't shared)
+            </summary>
+            <returns>index of the shared edge or -1 if edge isn't shared</returns>
+        </member>
+        <member name="M:Poly2Tri.Rect2D.Contains(System.Double,System.Double)">
+            <summary>
+            Returns whether the coordinate is inside the bounding box.  Note that this will return
+            false if the point is ON the edge of the bounding box.  If you want to test for whether
+            the point is inside OR on the rect, use ContainsInclusive
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.Rect2D.ContainsInclusive(System.Double,System.Double)">
+            <summary>
+            Returns whether the coordinate is inside the bounding box.  Note that this will return
+            false if the point is ON the edge of the bounding box.  If you want to test for whether
+            the point is inside OR on the rect, use ContainsInclusive
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.Rect2D.Intersection(Poly2Tri.Rect2D,Poly2Tri.Rect2D)">
+             Intersection
+            
+             Sets the rectangle to the intersection of two rectangles. 
+             Returns true if there is any intersection between the two rectangles.
+             If there is no intersection, the rectangle is set to 0, 0, 0, 0.
+             Either of the input rectangles may be the same as destination rectangle.
+            
+        </member>
+        <member name="M:Poly2Tri.Rect2D.Union(Poly2Tri.Rect2D,Poly2Tri.Rect2D)">
+             Union
+            
+             Sets the rectangle to the union of two rectangles r1 and r2. 
+             If either rect is empty, it is ignored. If both are empty, the rectangle
+             is set to r1.
+             Either of the input rectangle references may refer to the destination rectangle.
+            
+        </member>
+        <member name="T:Poly2Tri.TriangulationUtil">
+            @author Thomas Åhlén, thahlen@gmail.com
+        </member>
+        <member name="M:Poly2Tri.TriangulationUtil.SmartIncircle(Poly2Tri.Point2D,Poly2Tri.Point2D,Poly2Tri.Point2D,Poly2Tri.Point2D)">
+            <summary>
+              Requirements:
+            1. a,b and c form a triangle.
+            2. a and d is know to be on opposite side of bc
+            <code>
+                           a
+                           +
+                          / \
+                         /   \
+                       b/     \c
+                       +-------+ 
+                      /    B    \  
+                     /           \ 
+            </code>
+               Facts:
+             d has to be in area B to have a chance to be inside the circle formed by a,b and c
+             d is outside B if orient2d(a,b,d) or orient2d(c,a,d) is CW
+             This preknowledge gives us a way to optimize the incircle test
+            </summary>
+            <param name="pa">triangle point, opposite d</param>
+            <param name="pb">triangle point</param>
+            <param name="pc">triangle point</param>
+            <param name="pd">point opposite a</param>
+            <returns>true if d is inside circle, false if on circle edge</returns>
+        </member>
+        <member name="M:Poly2Tri.TriangulationUtil.Orient2d(Poly2Tri.Point2D,Poly2Tri.Point2D,Poly2Tri.Point2D)">
+            Forumla to calculate signed area
+            Positive if CCW
+            Negative if CW
+            0 if collinear
+            A[P1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
+                         =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
+        </member>
+        <member name="M:Poly2Tri.TriangulationUtil.LinesIntersect2D(Poly2Tri.Point2D,Poly2Tri.Point2D,Poly2Tri.Point2D,Poly2Tri.Point2D,System.Boolean,System.Boolean,System.Boolean,Poly2Tri.Point2D@,System.Double)">
+            <summary>
+            This method detects if two line segments (or lines) intersect,
+            and, if so, the point of intersection. Use the <paramref name="firstIsSegment"/> and
+            <paramref name="secondIsSegment"/> parameters to set whether the intersection point
+            must be on the first and second line segments. Setting these
+            both to true means you are doing a line-segment to line-segment
+            intersection. Setting one of them to true means you are doing a
+            line to line-segment intersection test, and so on.
+            Note: If two line segments are coincident, then 
+            no intersection is detected (there are actually
+            infinite intersection points).
+            </summary>
+            <param name="ptStart0">The first point of the first line segment.</param>
+            <param name="ptEnd0">The second point of the first line segment.</param>
+            <param name="ptStart1">The first point of the second line segment.</param>
+            <param name="ptEnd1">The second point of the second line segment.</param>
+            <param name="firstIsSegment">Set this to true to require that the 
+            intersection point be on the first line segment.</param>
+            <param name="secondIsSegment">Set this to true to require that the
+            intersection point be on the second line segment.</param>
+            <param name="coincidentEndPointCollisions">Set this to true to enable collisions if the line segments share
+            an endpoint</param>
+            <param name="pIntersectionPt">This is set to the intersection
+            point if an intersection is detected.</param>
+            <returns>True if an intersection is detected, false otherwise.</returns>
+        </member>
+        <member name="F:Poly2Tri.Point2DList.kLinearSlop">
+            A small length used as a collision and constraint tolerance. Usually it is
+            chosen to be numerically significant, but visually insignificant.
+        </member>
+        <member name="F:Poly2Tri.Point2DList.kAngularSlop">
+            A small angle used as a collision and constraint tolerance. Usually it is
+            chosen to be numerically significant, but visually insignificant.
+        </member>
+        <member name="M:Poly2Tri.Point2DList.PreviousIndex(System.Int32)">
+            <summary>
+            Gets the previous index.
+            </summary>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.GetSignedArea">
+            <summary>
+            Gets the signed area.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.GetArea">
+            <summary>
+            Gets the area.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.GetCentroid">
+            <summary>
+            Gets the centroid.
+            </summary>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Poly2Tri.Point2DList.Translate(Poly2Tri.Point2D)" -->
+        <member name="M:Poly2Tri.Point2DList.Scale(Poly2Tri.Point2D)">
+            <summary>
+            Scales the vertices with the specified vector.
+            </summary>
+            <param name="value">The Value.</param>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.Rotate(System.Double)">
+            <summary>
+            Rotate the vertices with the defined value in radians.
+            </summary>
+            <param name="value">The amount to rotate by in radians.</param>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.IsConvex">
+            <summary>
+            Assuming the polygon is simple; determines whether the polygon is convex.
+            </summary>
+            <returns>
+              <c>true</c> if it is convex; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.IsSimple">
+            <summary>
+            Check for edge crossings
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.CheckPolygon">
+             <summary>
+             Checks if polygon is valid for use in Box2d engine.
+             Last ditch effort to ensure no invalid polygons are
+             added to world geometry.
+            
+             Performs a full check, for simplicity, convexity,
+             orientation, minimum angle, and volume.  This won't
+             be very efficient, and a lot of it is redundant when
+             other tools in this section are used.
+            
+             From Eric Jordan's convex decomposition library
+             </summary>
+             <param name="printErrors"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.RemoveDuplicateNeighborPoints">
+            <summary>
+            Removes duplicate points that lie next to each other in the list
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.Simplify">
+            <summary>
+            Removes all collinear points on the polygon.
+            Has a default bias of 0
+            </summary>
+            <param name="polygon">The polygon that needs simplification.</param>
+            <returns>A simplified polygon.</returns>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.Simplify(System.Double)">
+            <summary>
+            Removes all collinear points on the polygon.   Note that this is NOT safe to run on a complex
+            polygon as it will remove points that it should not.   For example, consider this polygon:
+            
+                      2
+                      +
+                     / \
+                    /   \
+                   /     \
+            0 +---+-------+
+                  3       1
+            
+            This algorithm would delete point 3, leaving you with the polygon 0,1,2 - definitely NOT the correct
+            polygon.  Caveat Emptor!
+            
+            </summary>
+            <param name="polygon">The polygon that needs simplification.</param>
+            <param name="bias">The distance bias between points. Points closer than this will be 'joined'.</param>
+            <returns>A simplified polygon.</returns>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.MergeParallelEdges(System.Double)">
+            <summary>
+            Merges all parallel edges in the list of vertices
+            </summary>
+            <param name="tolerance"></param>
+        </member>
+        <member name="M:Poly2Tri.Point2DList.ProjectToAxis(Poly2Tri.Point2D,System.Double@,System.Double@)">
+            <summary>
+            Projects to axis.
+            </summary>
+            <param name="axis">The axis.</param>
+            <param name="min">The min.</param>
+            <param name="max">The max.</param>
+        </member>
+        <member name="M:Poly2Tri.Polygon.#ctor(System.Collections.Generic.IList{Poly2Tri.PolygonPoint})">
+            <summary>
+            Create a polygon from a list of at least 3 points with no duplicates.
+            </summary>
+            <param name="points">A list of unique points</param>
+        </member>
+        <member name="M:Poly2Tri.Polygon.#ctor(System.Collections.Generic.IEnumerable{Poly2Tri.PolygonPoint})">
+            <summary>
+            Create a polygon from a list of at least 3 points with no duplicates.
+            </summary>
+            <param name="points">A list of unique points.</param>
+        </member>
+        <member name="M:Poly2Tri.Polygon.#ctor(Poly2Tri.PolygonPoint[])">
+            <summary>
+            Create a polygon from a list of at least 3 points with no duplicates.
+            </summary>
+            <param name="points">A list of unique points.</param>
+        </member>
+        <member name="M:Poly2Tri.Polygon.RemovePoint(Poly2Tri.PolygonPoint)">
+            <summary>
+            Removes a point from the polygon.  Note this can be a somewhat expensive operation
+            as it must recalculate the bounding area from scratch.
+            </summary>
+            <param name="p"></param>
+        </member>
+        <member name="M:Poly2Tri.Polygon.AddHole(Poly2Tri.Polygon)">
+            <summary>
+            Add a hole to the polygon.
+            </summary>
+            <param name="poly">A subtraction polygon fully contained inside this polygon.</param>
+        </member>
+        <member name="M:Poly2Tri.Polygon.Prepare(Poly2Tri.TriangulationContext)">
+            <summary>
+            Creates constraints and populates the context with points
+            </summary>
+            <param name="tcx">The context</param>
+        </member>
+        <member name="M:Poly2Tri.PolygonUtil.PolygonsAreSame2D(System.Collections.Generic.IList{Poly2Tri.Point2D},System.Collections.Generic.IList{Poly2Tri.Point2D})">
+            <summary>
+            Check if the polys are similar to within a tolerance (Doesn't include reflections,
+            but allows for the points to be numbered differently, but not reversed).
+            </summary>
+            <param name="poly1"></param>
+            <param name="poly2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Poly2Tri.PolygonUtil.PolygonContainsPolygon(System.Collections.Generic.IList{Poly2Tri.Point2D},Poly2Tri.Rect2D,System.Collections.Generic.IList{Poly2Tri.Point2D},Poly2Tri.Rect2D,System.Boolean)">
+             <summary>
+             Checks to see if poly1 contains poly2.  return true if so, false otherwise.
+            
+             If the polygons intersect, then poly1 cannot contain poly2 (or vice-versa for that matter)
+             Since the poly intersection test can be somewhat expensive, we'll only run it if the user
+             requests it.   If runIntersectionTest is false, then it is assumed that the user has already
+             verified that the polygons do not intersect.  If the polygons DO intersect and runIntersectionTest
+             is false, then the return value is meaningless.  Caveat emptor.
+             
+             As an added bonus, just to cause more user-carnage, if runIntersectionTest is false, then the 
+             boundRects are not used and can safely be passed in as nulls.   However, if runIntersectionTest
+             is true and you pass nulls for boundRect1 or boundRect2, you will cause a program crash.
+             
+             Finally, the polygon points are assumed to be passed in Clockwise winding order.   It is possible
+             that CounterClockwise ordering would work, but I have not verified the behavior in that case. 
+             
+             </summary>
+             <param name="poly1">points of polygon1</param>
+             <param name="boundRect1">bounding rect of polygon1.  Only used if runIntersectionTest is true</param>
+             <param name="poly2">points of polygon2</param>
+             <param name="boundRect2">bounding rect of polygon2.  Only used if runIntersectionTest is true</param>
+             <param name="runIntersectionTest">see summary above</param>
+             <returns>true if poly1 fully contains poly2</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Poly2Tri.PolygonUtil.PolygonUnion(Poly2Tri.Point2DList,Poly2Tri.Point2DList,Poly2Tri.Point2DList@)" -->
+        <member name="M:Poly2Tri.PolygonUtil.PolygonIntersect(Poly2Tri.Point2DList,Poly2Tri.Point2DList,Poly2Tri.Point2DList@)">
+            <summary>
+            Finds the intersection between two polygons.
+            </summary>
+            <param name="polygon1">The first polygon.</param>
+            <param name="polygon2">The second polygon.</param>
+            <param name="intersectOut">The intersection of the two polygons</param>
+            <returns>error code</returns>
+        </member>
+        <member name="M:Poly2Tri.PolygonUtil.PolygonSubtract(Poly2Tri.Point2DList,Poly2Tri.Point2DList,Poly2Tri.Point2DList@)">
+            <summary>
+            Subtracts one polygon from another.
+            </summary>
+            <param name="polygon1">The base polygon.</param>
+            <param name="polygon2">The polygon to subtract from the base.</param>
+            <param name="subtract">The result of the polygon subtraction</param>
+            <returns>error code</returns>
+        </member>
+        <member name="M:Poly2Tri.PolygonUtil.PolygonOperation(Poly2Tri.PolygonUtil.PolyOperation,Poly2Tri.Point2DList,Poly2Tri.Point2DList,System.Collections.Generic.Dictionary{System.UInt32,Poly2Tri.Point2DList}@)">
+            <summary>
+            Performs one or more polygon operations on the 2 provided polygons
+            </summary>
+            <param name="polygon1">The first polygon.</param>
+            <param name="polygon2">The second polygon</param>
+            <param name="subtract">The result of the polygon subtraction</param>
+            <returns>error code</returns>
+        </member>
+        <member name="M:Poly2Tri.PolygonUtil.SplitComplexPolygon(Poly2Tri.Point2DList,System.Double)">
+             <summary>
+             Trace the edge of a non-simple polygon and return a simple polygon.
+             
+            Method:
+            Start at vertex with minimum y (pick maximum x one if there are two).  
+            We aim our "lastDir" vector at (1.0, 0)
+            We look at the two rays going off from our start vertex, and follow whichever
+            has the smallest angle (in -Pi . Pi) wrt lastDir ("rightest" turn)
+            
+            Loop until we hit starting vertex:
+            
+            We add our current vertex to the list.
+            We check the seg from current vertex to next vertex for intersections
+              - if no intersections, follow to next vertex and continue
+              - if intersections, pick one with minimum distance
+                - if more than one, pick one with "rightest" next point (two possibilities for each)
+                
+             </summary>
+             <param name="verts"></param>
+             <returns></returns>
+        </member>
+        <member name="M:Poly2Tri.PolygonOperationContext.VerticesIntersect(Poly2Tri.Point2DList,Poly2Tri.Point2DList,System.Collections.Generic.List{Poly2Tri.EdgeIntersectInfo}@)">
+            <summary>
+            Check and return polygon intersections
+            </summary>
+            <param name="polygon1"></param>
+            <param name="polygon2"></param>
+            <param name="intersections"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Poly2Tri.PolygonOperationContext.PointInPolygonAngle(Poly2Tri.Point2D,Poly2Tri.Point2DList)">
+            <summary>
+            * ref: http://ozviz.wasp.uwa.edu.au/~pbourke/geometry/insidepoly/  - Solution 2 
+            * Compute the sum of the angles made between the test point and each pair of points making up the polygon. 
+            * If this sum is 2pi then the point is an interior point, if 0 then the point is an exterior point. 
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.PolygonOperationContext.VectorAngle(Poly2Tri.Point2D,Poly2Tri.Point2D)">
+            <summary>
+            Return the angle between two vectors on a plane
+            The angle is from vector 1 to vector 2, positive anticlockwise
+            The result is between -pi -> pi
+            </summary>
+        </member>
+        <member name="T:Poly2Tri.DTSweepContext">
+             
+             @author Thomas Åhlén, thahlen@gmail.com
+            
+        </member>
+        <member name="M:Poly2Tri.DTSweepContext.MapTriangleToNodes(Poly2Tri.DelaunayTriangle)">
+            <summary>
+            Try to map a node to all sides of this triangle that don't have 
+            a neighbor.
+            </summary>
+        </member>
+        <member name="T:Poly2Tri.Contour">
+            <summary>
+            This is basically a light-weight version of the Polygon class, but with limited functionality and
+            used for different purposes.   Nonetheless, for all intents and purposes, this should actually be
+            a polygon (though not a Polygon..)
+            </summary>
+        </member>
+        <member name="M:Poly2Tri.Contour.GetNumHoles(System.Boolean)">
+            <summary>
+            returns number of holes that are actually holes, including all children of children, etc.   Does NOT
+            include holes that are not actually holes.   For example, if the parent is not a hole and this contour has
+            a hole that contains a hole, then the number of holes returned would be 2 - one for the current hole (because
+            the parent is NOT a hole and thus this hole IS a hole), and 1 for the child of the child.
+            </summary>
+            <param name="parentIsHole"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Poly2Tri.Contour.GetNumHoles">
+            <summary>
+            returns the basic number of child holes of THIS contour, not including any children of children, etc nor
+            examining whether any children are actual holes.
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
