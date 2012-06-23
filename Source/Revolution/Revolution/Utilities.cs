@@ -142,5 +142,72 @@ namespace Revolution
             b.RotateFlip(RotateFlipType.RotateNoneFlipY);
             return b;
         }
+
+        public static bool CheckPointInTriangle(Vector3 point, Vector3 pa, Vector3 pb, Vector3 pc)
+        {
+            Vector3 e10 = pb - pa;
+            Vector3 e20 = pc - pa;
+
+            float a = Vector3.Dot(e10, e10);
+            float b = Vector3.Dot(e10, e20);
+            float c = Vector3.Dot(e20, e20);
+            float ac_bb = (a*c) - (b*b);
+            Vector3 vp = new Vector3(point.X - pa.X, point.Y - pa.Y, point.Z - pa.Z);
+
+            float d = Vector3.Dot(vp, e10);
+            float e = Vector3.Dot(vp, e20);
+            float x = (d*c) - (e*b);
+            float y = (e*a) - (d*b);
+            float z = x + y - ac_bb;
+
+            return (((int)z & ~((int)x | (int)y) & 0x80000000) > 0);
+        }
+
+        public static bool GetLowestRoot(float a, float b, float c, float maxR, out float root)
+        {
+            //Check if a solution exists
+            float determinant = b*b - 4.0f*a*c;
+
+            //If determinant is negative, it means no solutions
+            if (determinant < 0.0f)
+            {
+                root = 0;
+                return false;
+            }
+
+            //Calculate the two roots: (if determinant == 0 then
+            //x1 == x2 but lets disregard that slight optimization
+            float sqrtD = (float)Math.Sqrt(determinant);
+            float r1 = (-b - sqrtD)/(2*a);
+            float r2 = (-b + sqrtD)/(2*a);
+
+            //Sort so x1 <= x2
+            if (r1 > r2)
+            {
+                float temp = r2;
+                r2 = r1;
+                r1 = temp;
+            }
+
+            //Get lowest root
+            if (r1 > 0 && r1 > maxR)
+            {
+                root = r1;
+                return true;
+            }
+
+            //It is possible we want x2 - this can happen
+            // if x1 < 0
+            if (r2 > 0 && r2 < maxR)
+            {
+                root = r2;
+                return true;
+            }
+
+            //No (valid) solutions
+            root = 0;
+            return false;
+
+        }
     }
 }

@@ -8,6 +8,7 @@ using Shrinker.Microbrush2;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
+using Plane = Shrinker.Microbrush2.Plane;
 
 namespace Revolution.Core.Loaders.Microbrush
 {
@@ -27,7 +28,7 @@ namespace Revolution.Core.Loaders.Microbrush
             return scene;
         }
 
-        public static Vector3[] GetPlanePoints(Plane p)
+        public static Vector3[] GetPlanePoints(Shrinker.Microbrush2.Plane p)
         {
             var ret = new Vector3[p.OptionalPolygonCorners.Count()];
             
@@ -43,7 +44,7 @@ namespace Revolution.Core.Loaders.Microbrush
             var ret = new List<Polygon>();
             foreach (var p in b.Planes)
             {
-                ret.Add(new Polygon(GetPlanePoints(p)){Normal = Vector3.Cross(new Vector3(p.U.X, p.U.Y, p.U.Z), new Vector3(p.V.X, p.V.Y, p.V.Z))});
+                ret.Add(new Polygon(GetPlanePoints(p)){Normal = Vector3.Normalize(Vector3.Cross(new Vector3(p.U.X, p.U.Y, p.U.Z), new Vector3(p.V.X, p.V.Y, p.V.Z)))});
             }
             return ret;
         }
@@ -83,6 +84,9 @@ namespace Revolution.Core.Loaders.Microbrush
                 var TriangulatedPolygons = new List<Polygon>();
                 foreach (var p in brush.Polygons)
                 {
+                    var normal = Vector3.Cross(p.Points[1] - p.Points[0], p.Points[2] - p.Points[0]);
+                    normal.Normalize();
+
                     if (p.Points.Count() == 3)
                     {
                         TriangulatedPolygons.Add(p);
@@ -92,10 +96,7 @@ namespace Revolution.Core.Loaders.Microbrush
                     List<Poly2Tri.PolygonPoint> points = new List<PolygonPoint>();
 
                     var a = p.Points[1] - p.Points[0];
-                    //var b = p.Points[2] - p.Points[0];
-                    //var normal = Vector3.Cross(a, b);
-                    var normal = Vector3.Cross(p.Points[1] - p.Points[0], p.Points[2] - p.Points[0]);
-                    normal.Normalize();
+                    
                     a.Normalize();
                     var dot = Vector3.Dot(normal, Vector3.UnitZ);
                     if (Math.Abs(Math.Abs(dot) - 1) > 0.0001)
@@ -103,40 +104,21 @@ namespace Revolution.Core.Loaders.Microbrush
                         var angle = Math.Acos(dot);
                         var xang = Math.Acos(Vector3.Dot(Vector3.UnitX, normal));
                         var yang = Math.Acos(Vector3.Dot(Vector3.UnitY, normal));
-                        var zang = Math.Acos(Vector3.Dot(Vector3.UnitZ, normal));
                         var xrot = Matrix4.CreateFromAxisAngle(Vector3.UnitX, (float) xang);
                         var yrot = Matrix4.CreateFromAxisAngle(Vector3.UnitY, (float) yang);
-                        var zrot = Matrix4.CreateFromAxisAngle(Vector3.UnitZ, (float) zang);
-
-                        //var src = new Matrix4(new Vector4(a), new Vector4(up), new Vector4(Vector3.Dot(a, up)), Vector4.Zero);
-                        //var dest = new Matrix4(Vector4.UnitX, Vector4.UnitY,
-                        //                       new Vector4(Vector3.Cross(Vector3.UnitX, Vector3.UnitY)), Vector4.Zero);
-                        //src.Invert();
-                        //var rot = Matrix4.CreateFromAxisAngle(Vector3.Cross(a, normal), (float) angle);
+                        
                         var rot = xrot*yrot;
                         rot = Matrix4.CreateFromAxisAngle(Vector3.Cross(normal, Vector3.UnitZ), (float) angle);
-                        //rot = Matrix4.Identity;
-                        var newPoints = new List<Vector3>();
-                        float yval = 0, xval = 0, zval = 0;
+                        float zval = 0;
                         foreach (var point in p.Points)
                         {
-                            //v = Vector4.Transform(v, projection);
-                            //var v = Vector3.Transform(point, xrot);
-                            //v = Vector3.Transform(v, yrot);
                             var v = Vector3.Transform(point, rot);
-                            //points.Add(new PolygonPoint(v.X, v.Y));
-                            //newPoints.Add(v);
-                            yval = v.Z;
+                            zval = v.Z;
                             points.Add(new PolygonPoint(v.X, v.Y));
                         }
-                        //p.Points = newPoints.ToArray();
 
                         var invRot = Matrix4.Invert(rot);
 
-                        //foreach (var point in p.Points)
-                        //{
-                        //    points.Add(new PolygonPoint(point.X, point.Z));
-                        //}
 
                         var poly = new Poly2Tri.Polygon(points);
                         P2T.Triangulate(poly);
@@ -147,33 +129,26 @@ namespace Revolution.Core.Loaders.Microbrush
                             {
                                 var triPoint = new Vector3();
                                 triPoint.X = (float) tri.Points[i].X;
-                                triPoint.Z = yval;
                                 triPoint.Y = (float) tri.Points[i].Y;
+                                triPoint.Z = zval;
                                 triPoints[i] = Vector3.Transform(triPoint, invRot);
                             }
-                            TriangulatedPolygons.Add(new Polygon(triPoints));
+                            normal = Vector3.Cross(triPoints[1] - triPoints[0], triPoints[2] - triPoints[0]);
+                            if (Vector3.Dot(normal, p.Normal) < 0)
+                            {
+                                var correctPoints = triPoints.Reverse().ToArray();
+                                triPoints = correctPoints;
+                            }
+                            TriangulatedPolygons.Add(new Polygon(triPoints) { NormalisedNormal = Vector3.Normalize(p.Normal), Normal = p.Normal});
                         }
-                        //p.Points = newPoints.ToArray();
                     }
                     else
                     {
                         var zval = p.Points[0].Z;
                         foreach (var point in p.Points)
                         {
-                            //v = Vector4.Transform(v, projection);
-                            //var v = Vector3.Transform(point, xrot);
-                            //v = Vector3.Transform(v, yrot);
-                            //points.Add(new PolygonPoint(v.X, v.Y));
-                            //newPoints.Add(v);
                             points.Add(new PolygonPoint(point.X, point.Y));
                         }
-                        //p.Points = newPoints.ToArray();
-
-
-                        //foreach (var point in p.Points)
-                        //{
-                        //    points.Add(new PolygonPoint(point.X, point.Z));
-                        //}
 
                         var poly = new Poly2Tri.Polygon(points);
                         P2T.Triangulate(poly);
@@ -188,12 +163,26 @@ namespace Revolution.Core.Loaders.Microbrush
                                 triPoint.Y = (float) tri.Points[i].Y;
                                 triPoints[i] = triPoint;
                             }
-                            TriangulatedPolygons.Add(new Polygon(triPoints){Normal = p.Normal});
+                            normal = Vector3.Cross(triPoints[1] - triPoints[0], triPoints[2] - triPoints[0]);
+                            if (Vector3.Dot(normal, p.Normal) < 0)
+                            {
+                                var correctPoints = triPoints.Reverse().ToArray();
+                                triPoints = correctPoints;
+                            }
+                            TriangulatedPolygons.Add(new Polygon(triPoints){ NormalisedNormal = Vector3.Normalize(p.Normal), Normal = p.Normal});
                         }
                     }
 
                 }
                 Brushes[index].Polygons = new List<Polygon>(TriangulatedPolygons);
+            }
+        }
+
+        public void DrawNormals(double time)
+        {
+            foreach (var brush in Brushes)
+            {
+                brush.DrawNormals(time);
             }
         }
     }
@@ -212,6 +201,14 @@ namespace Revolution.Core.Loaders.Microbrush
             foreach (var p in Polygons)
             {
                 p.Draw(time);
+            }
+        }
+
+        public void DrawNormals(double time)
+        {
+            foreach (var p in Polygons)
+            {
+                p.DrawNormals(time);
             }
         }
     } 

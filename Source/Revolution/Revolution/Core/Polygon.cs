@@ -12,6 +12,7 @@ namespace Revolution.Core
     {
         public Vector3[] Points;
         public Vector3 Normal = Vector3.Zero;
+        public Vector3 NormalisedNormal = Vector3.Zero;
 
         public Polygon(Vector3[] points)
         {
@@ -20,51 +21,18 @@ namespace Revolution.Core
 
         public void Draw(double time)
         {
-            //if (Points.Count() == 5)
-            //{
-            //    GL.End();
-            //    GL.Begin(BeginMode.Points);
-            //    GL.Color3(Color.Red);
-            //}
-            //if (Points.Count() == 3)
-            //{
-            //    GL.End();
-            //    GL.Begin(BeginMode.Triangles);
-            //    GL.Color3(Color.Blue);
-            //}
-            //if (Points.Count() == 4)
-            //{
-            //    bool f = true;
-            //}
-            //GL.Normal3(Vector3.Cross(Points[1] - Points[0], Points[2] - Points[1]));
-            GL.Normal3(Normal + Points[0]);
-            //GL.End();
-            //GL.Disable(EnableCap.Lighting);
-            //GL.LineWidth(5);
-            //GL.Begin(BeginMode.Lines);
-            //GL.Color3(Color.Red);
-            //GL.Vertex3(Points[0]);
-            //GL.Vertex3(Normal + Points[0]);
-            //GL.End();
-            //GL.Enable(EnableCap.Lighting);
-            //GL.Begin(BeginMode.Triangles);
+
             foreach (var p in Points)
             {
                 GL.Vertex3(p);
             }
-            //GL.End();
-            //GL.Color3(Color.DarkGreen);
-            //GL.LineWidth(5);
-            //GL.Begin(BeginMode.Lines);
-            //GL.Vertex3(Points[0]);
-            //GL.Vertex3(Vector3.Cross(Points[1] - Points[0], Points[2] - Points[0]) + Points[0]);
-            //GL.Color3(Color.Red);
-            //GL.Vertex3(Points[0]);
-            //GL.Vertex3(Vector3.Cross(Vector3.Cross(Points[1] - Points[0], Points[2] - Points[0]), Vector3.UnitZ) + Points[0]);
-            //GL.Color3(Color.Black);
-            //GL.End();
-            //GL.LineWidth(1);
-            //GL.Begin(BeginMode.Quads);
+          
+        }
+
+        public void DrawNormals(double time)
+        {
+            GL.Vertex3((Points[0] + Points[1] + Points[2]) / 3);
+            GL.Vertex3(NormalisedNormal * 5 + ((Points[0] + Points[1] + Points[2]) / 3));
         }
     }
 }
