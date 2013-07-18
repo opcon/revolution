@@ -76,6 +76,29 @@ namespace Revolution.Core.Loaders.Microbrush
             }
         }
 
+        public void CheckCollisions(ref CollisionPacket colpacket)
+        {
+            foreach (var brush in Brushes)
+            {
+                foreach (var pol in brush.Polygons)
+                {
+                    bool colFound = false;
+                    //Collisions.CheckTriangle(ref colpacket, Vector3.Divide(pol.Points[0], colpacket.ERadius),
+                    //                         Vector3.Divide(pol.Points[1], colpacket.ERadius),
+                    //                         Vector3.Divide(pol.Points[2], colpacket.ERadius), ref colFound);
+                    CollisionTest.CheckTriangle(ref colpacket, Vector3.Divide(pol.Points[0], colpacket.ERadius),
+                                             Vector3.Divide(pol.Points[1], colpacket.ERadius),
+                                             Vector3.Divide(pol.Points[2], colpacket.ERadius));
+                    //pol.IsColliding = colFound;
+                    pol.Colour = new Plane(new Vector3[] {Vector3.Divide(pol.Points[0], colpacket.ERadius),
+                                          Vector3.Divide(pol.Points[1], colpacket.ERadius),
+                                          Vector3.Divide(pol.Points[2], colpacket.ERadius) }).IsFrontFacingTo(
+                                          colpacket.NormalisedVelocity) ? Color4.Purple : Color4.White;
+                    if (colpacket.FoundCollision) pol.IsColliding = true;
+                }
+            } 
+        }
+
         public void Triangulate()
         {
             for (int index = 0; index < Brushes.Count; index++)

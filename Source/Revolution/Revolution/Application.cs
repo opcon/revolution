@@ -29,9 +29,12 @@ namespace Revolution
         internal static int WindowHeight, WindowWidth;
         private List<Polygon> PolysToTriangulate = new List<Polygon>();
         private List<Polygon> triPolys = new List<Polygon>();
+        private CollisionPacket collisionTest = new CollisionPacket();
+
+        private Player GamePlayer;
 
 
-        /// <summary>Creates a 800x600 window with the specified title.</summary>
+        /// <summary>Creates a 1600*900 window with the specified title.</summary>
         public Game()
             : base(800, 600, GraphicsMode.Default, "Revolution")
         {
@@ -67,6 +70,8 @@ namespace Revolution
             GameCamera.MouseYSensitivity = 0.1f;
             GameCamera.ZFar = 64000.0f;
             GameCamera.Speed = 20f;
+            
+            GamePlayer = new Player(GameCamera, new Vector3(0, 15, 0));
 
             Keyboard.KeyDown += (o, args) => InputSystem.KeyDown(args);
             Keyboard.KeyUp += (o, args) => InputSystem.KeyUp(args);
@@ -76,9 +81,11 @@ namespace Revolution
             Mouse.Move += (o, args) => InputSystem.MouseMoved(args);
 
             grid = new Grid();
-            TestScene = new MicrobrushScene(MicrobrushLoader.GetBrushes(MicrobrushLoader.LoadScene(Directories.MapsDirectory + @"\PhysicsTest.mb2.dat")));
-            TestScene = new MicrobrushScene(MicrobrushLoader.GetBrushes(MicrobrushLoader.LoadScene(Directories.MapsDirectory + @"\complexeTest.mb2.dat")));
+            //TestScene = new MicrobrushScene(MicrobrushLoader.GetBrushes(MicrobrushLoader.LoadScene(Directories.MapsDirectory + @"\PhysicsTest.mb2.dat")));
+            TestScene = new MicrobrushScene(MicrobrushLoader.GetBrushes(MicrobrushLoader.LoadScene(Directories.MapsDirectory + @"\Physics.mb2.xml")));
             TestScene.Triangulate();
+
+            //collisionTest.ERadius = new Vector3(1, 1, 1);
            
         }
 
@@ -87,6 +94,78 @@ namespace Revolution
             if (Focused)
                 InputSystem.KeyPressed(e);
             base.OnKeyPress(e);
+        }
+
+        public static Vertex[] CalculateVertices2(float radius, float height, byte segments, byte rings)
+        {
+            var data = new Vertex[segments * rings];
+
+            int i = 0;
+
+            for (double y = 0; y < rings; y++)
+            {
+                double phi = (y / (rings - 1)) * Math.PI; //was /2 
+                for (double x = 0; x < segments; x++)
+                {
+                    double theta = (x / (segments - 1)) * 2 * Math.PI;
+
+                    Vector3 v = new Vector3()
+                    {
+                        X = (float)(radius * Math.Sin(phi) * Math.Cos(theta)),
+                        Y = (float)(height * Math.Cos(phi)),
+                        Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta)),
+                    };
+                    Vector3 n = Vector3.Normalize(v);
+                    Vector2 uv = new Vector2()
+                    {
+                        X = (float)(x / (segments - 1)),
+                        Y = (float)(y / (rings - 1))
+                    };
+                    // Using data[i++] causes i to be incremented multiple times in Mono 2.2 (bug #479506).
+                    data[i] = new Vertex() { Position = v, Normal = n, TexCoord = uv };
+                    i++;
+                }
+
+            }
+
+            return data;
+        }
+
+        public static ushort[] CalculateElements(float radius, float height, byte segments, byte rings)
+        {
+            var num_vertices = segments * rings;
+            var data = new ushort[num_vertices * 6];
+
+            ushort i = 0;
+
+            for (byte y = 0; y < rings - 1; y++)
+            {
+                for (byte x = 0; x < segments - 1; x++)
+                {
+                    data[i++] = (ushort)((y + 0) * segments + x);
+                    data[i++] = (ushort)((y + 1) * segments + x);
+                    data[i++] = (ushort)((y + 1) * segments + x + 1);
+
+                    data[i++] = (ushort)((y + 1) * segments + x + 1);
+                    data[i++] = (ushort)((y + 0) * segments + x + 1);
+                    data[i++] = (ushort)((y + 0) * segments + x);
+                }
+            }
+
+            // Verify that we don't access any vertices out of bounds:
+            foreach (int index in data)
+                if (index >= segments * rings)
+                    throw new IndexOutOfRangeException();
+
+            return data;
+        }
+
+
+        public struct Vertex
+        { // mimic InterleavedArrayFormat.T2fN3fV3f
+            public Vector2 TexCoord;
+            public Vector3 Normal;
+            public Vector3 Position;
         }
 
 
@@ -128,7 +207,16 @@ namespace Revolution
 
             if (Keyboard[Key.Escape])
                 Exit();
-            GameCamera.Update(e.Time);
+            //GameCamera.Update(e.Time);
+
+            GamePlayer.Update(e.Time, TestScene);
+
+
+
+            //Console.WriteLine(string.Format("Position is {0}", collisionTest.BasePoint));
+            //Console.WriteLine(string.Format("Velocity is {0}", collisionTest.Velocity));
+
+
         }
 
         /// <summary>
@@ -143,20 +231,45 @@ namespace Revolution
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GameCamera.GetModelviewMatrix(out modelview);
 
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
+            //GL.Enable(EnableCap.CullFace);
+            GL.Disable(EnableCap.CullFace);
+            //GL.CullFace(CullFaceMode.Back);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.Light(LightName.Light0, LightParameter.Position, new Vector4(0, 0, 0, 1));
+
+            //GL.Translate(-GamePlayer.CameraPos);
+            GL.Translate(-GamePlayer.CameraOffset);
+            float radius = 1;
+            float height = 1;
+            byte segments = 50;
+            byte rings = 50;
+            var vertices = CalculateVertices2(radius, height, segments, rings);
+            var elements = CalculateElements(radius, height, segments, rings);
+
+            //GL.Translate(0, -10, 0);
+            GL.Begin(BeginMode.Triangles);
+            for (int index = elements.Length - 1; index >= 0; index--)
+            {
+                var element = elements[index];
+                var vertex = vertices[element];
+                GL.TexCoord2(vertex.TexCoord);
+                GL.Normal3(vertex.Normal);
+                GL.Vertex3(vertex.Position);
+            }
+            GL.End();
+
             GL.LoadMatrix(ref modelview);
             
             grid.Render(e.Time);
 
+
+
             GL.Enable(EnableCap.Light0);
             GL.Color3(Color.White);
             GL.Enable(EnableCap.Lighting);
-            GL.Translate(0, 10, 0);
+            //GL.Translate(0, 10, 0);
             GL.Begin(BeginMode.Triangles);
 
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
@@ -164,12 +277,22 @@ namespace Revolution
             //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
             //GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { 0.0f, 0.0f, 0.0f, 1.0f });
 
+
+            //if (collisionTest.FoundCollision)
+            //{
+            //    GL.Color3(Color.Red);
+            //}
+
             TestScene.Draw(e.Time);
             GL.End();
             GL.Color3(Color.Black);
             GL.Begin(BeginMode.Lines);
             TestScene.DrawNormals(e.Time);
+            GL.Vertex3(GamePlayer.Position);
+            GL.Vertex3((GamePlayer.Velocity + GamePlayer.Position));
             GL.End();
+
+            
             SwapBuffers();
         }
 

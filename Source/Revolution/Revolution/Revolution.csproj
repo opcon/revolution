@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{68F71B5A-E92F-4871-AC08-EAD426DB51D7}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Revolution</RootNamespace>
     <AssemblyName>OpenTK Application</AssemblyName>
@@ -70,6 +70,7 @@
     <Compile Include="Core\ASCIIFileHelper.cs" />
     <Compile Include="Core\CamMode.cs" />
     <Compile Include="Core\CollisionPacket.cs" />
+    <Compile Include="Core\CollisionTest.cs" />
     <Compile Include="Core\FileWatcher.cs" />
     <Compile Include="Core\Grid.cs" />
     <Compile Include="Core\ICamera.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Core\Loaders\Microbrush\Includes\XmlUtils.cs" />
     <Compile Include="Core\Loaders\Microbrush\MicrobrushLoader.cs" />
     <Compile Include="Core\Plane.cs" />
+    <Compile Include="Core\Player.cs" />
     <Compile Include="Core\Polygon.cs" />
     <Compile Include="Core\QuaternionCamera.cs" />
     <Compile Include="Core\ShaderBase.cs" />

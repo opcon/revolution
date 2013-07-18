@@ -3,7 +3,7 @@ using OpenTK;
 
 namespace Revolution.Core
 {
-    struct CollisionPacket
+    public struct CollisionPacket
     {
         //Ellipsoid radius
         public Vector3 ERadius { get; set; }
@@ -21,10 +21,18 @@ namespace Revolution.Core
         public bool FoundCollision;
         public double NearestDistance;
         public Vector3 IntersectionPoint { get; set; }
+
+        public float Time { get; set; }
     }
 
     class Collisions
     {
+        public static Vector3 R3ToESpace(Vector3 r3, ref CollisionPacket collisionPacket)
+        {
+            //return new Vector3(r3.X / collisionPacket.ERadius.X, r3.Y / collisionPacket.ERadius.Y, r3.Z / collisionPacket.ERadius.Z);
+            return Vector3.Divide(r3, collisionPacket.ERadius);
+        }
+
         /// <summary>
         /// Assumes p1, p2, and p3 are given in ellipsoid space!
         /// </summary>
@@ -32,10 +40,12 @@ namespace Revolution.Core
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <param name="p3"></param>
-        public static void CheckTriangle(ref CollisionPacket colPacket, Vector3 p1, Vector3 p2, Vector3 p3)
+        /// <param name="colFound"></param>
+        public static void CheckTriangle(ref CollisionPacket colPacket, Vector3 p1, Vector3 p2, Vector3 p3, ref bool colFound)
         {
             //Make the plane containing this triangle
             var trianglePlane = new Plane(new Vector3[] {p1, p2, p3});
+            //var trianglePlane = new Plane(new Vector3[] {p3, p2, p1});
 
             // Is triangle front-facing to the velocity vector?
             // We only check front-facing traingles
@@ -258,7 +268,7 @@ namespace Revolution.Core
                     }
                 }
 
-                if (foundCollision == true)
+                if (foundCollision)
                 {
                     //distance to collision: t is time of collision
                     float distToCollision = t*colPacket.Velocity.Length;
@@ -272,7 +282,11 @@ namespace Revolution.Core
                         colPacket.IntersectionPoint = collisionPoint;
                         colPacket.FoundCollision = true;
                     }
+
+                    
                 }
+
+                colFound = foundCollision;
             }
         }
     }

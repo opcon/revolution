@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Revolution.Core
@@ -17,11 +18,24 @@ namespace Revolution.Core
         public Polygon(Vector3[] points)
         {
             Points = points;
+            Visible = true;
+        }
+
+        public bool IsColliding { get; set; }
+
+        public bool Visible { get; set; }
+
+        public Color4 Colour
+        {
+            get; set; 
         }
 
         public void Draw(double time)
         {
-
+            if (!Visible) return;
+            if (IsColliding)
+                Colour = Color4.Red;
+            GL.Color3((Color) Colour);
             foreach (var p in Points)
             {
                 GL.Vertex3(p);
@@ -31,6 +45,7 @@ namespace Revolution.Core
 
         public void DrawNormals(double time)
         {
+            if (!Visible) return;
             GL.Vertex3((Points[0] + Points[1] + Points[2]) / 3);
             GL.Vertex3(NormalisedNormal * 5 + ((Points[0] + Points[1] + Points[2]) / 3));
         }

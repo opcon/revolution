@@ -96,6 +96,7 @@ namespace Revolution.Core
 
         public Vector2 MouseRotation;
         public Vector3 Movement;
+        public Vector3 Velocity;
 
         public float Speed { get; set; }
         public float Acceleration { get; set; }
@@ -162,7 +163,7 @@ namespace Revolution.Core
         {
             var translationMatrix = Matrix4.CreateTranslation(-Position);
             var rotationMatrix = Matrix4.Rotate(Orientation);
-            Matrix4.Mult(ref translationMatrix, ref rotationMatrix, out matrix);
+           Matrix4.Mult(ref translationMatrix, ref rotationMatrix, out matrix);
         }
 
         public void GetModelviewProjectionMatrix(out Matrix4 result)
@@ -262,7 +263,7 @@ namespace Revolution.Core
         /// <param name="time">
         /// A <see cref="System.Double"/> containing the time since the last update
         /// </param>
-        protected void UpdateRotations(double time)
+        public void UpdateRotations(double time)
         {
             CalculateMouseDelta();
             MouseRotation.X += (float)(m_MouseDelta.X * MouseXSensitivity * time);
@@ -291,54 +292,48 @@ namespace Revolution.Core
         /// <param name="time">
         /// A <see cref="System.Double"/> containing the time since the last update
         /// </param>
-        protected void UpdateMovement(double time)
+        public void UpdateMovement(double time)
         {
             if (m_Keyboard[Key.W] && !m_Keyboard[Key.S])
             {
                 Movement.Z = 0;
-                Movement.Z -= Speed * (float)time;
+                Movement.Z -= Speed;
             }
             else if (m_Keyboard[Key.S] && !m_Keyboard[Key.W])
             {
                 Movement.Z = 0;
-                Movement.Z += Speed * (float)time;
+                Movement.Z += Speed;
             }
             else Movement.Z = 0.0f;
 
             if (m_Keyboard[Key.A] && !m_Keyboard[Key.D])
             {
                 Movement.X = 0.0f;
-                Movement.X -= Speed * (float)time;
+                Movement.X -= Speed;
             }
             else if (m_Keyboard[Key.D] && !m_Keyboard[Key.A])
             {
                 Movement.X = 0.0f;
-                Movement.X += Speed * (float)time;
+                Movement.X += Speed;
             }
             else
                 Movement.X = 0.0f;
 
-            if (CameraMode == CamMode.FirstPerson)
-            {
-                TargetPosition += Vector3.Transform(Movement, Quaternion.Invert(TargetOrientationY));
-                TargetPosition = new Vector3(TargetPosition.X, 5, TargetPosition.Z);
-            }
-            else
-                TargetPosition += Vector3.Transform(Movement, Quaternion.Invert(Orientation));
+            //TargetPosition += Vector3.Transform(Movement, Quaternion.Invert(Orientation));
+
+            Velocity = Vector3.Transform(Movement, Quaternion.Invert(Orientation));
+
+            TargetPosition += Velocity*(float) time;
+
             if (CameraMode != CamMode.FlightCamera)
                 Position = TargetPosition;
 
-            Console.WriteLine("Position={0}", Position);
+            //Console.WriteLine("Position={0}", Position);
         }
 
         #endregion
 
         #endregion
-
-
-
-
-
 
 
 
