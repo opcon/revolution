@@ -14,3 +14,4 @@ Source/Resources/Libraries/MataliRender.xml
 Source/Resources/Libraries/MataliRender.dll
 Source/Resources/Libraries/MataliPhysics.xml
 Source/Resources/Libraries/MataliPhysics.dll
+*.nupkg
