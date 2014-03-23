@@ -46,7 +46,7 @@ namespace Revolution.Core
             Camera.UpdateMovement(time);
             Velocity = Camera.Velocity;
 
-            Position.Y += 1;
+            //Position.Y += 1;
 
             colPacket = new CollisionPacket();
             colPacket.ERadius = new Vector3(1, 1, 1);
@@ -60,7 +60,7 @@ namespace Revolution.Core
             Position = CollideWithWorld(time, scene);
 
             Position = Vector3.Multiply(Position, colPacket.ERadius);
-            Position.Y -= 1;
+            //Position.Y -= 1;
 
 
             //Apply the velocity
@@ -78,7 +78,7 @@ namespace Revolution.Core
             // All hard-coded distances in this function is
             // scaled to fit the setting above..
             float unitScale = unitsPerMeter / 100.0f;
-            float veryCloseDistance = 0.005f * unitScale;
+            float veryCloseDistance = 0.0000005f * unitScale;
 
 
             colPacket.Velocity = Collisions.R3ToESpace(colPacket.R3Velocity, ref colPacket);
@@ -89,22 +89,22 @@ namespace Revolution.Core
 
             if (!colPacket.FoundCollision)
             {
-                return Position + Velocity*(float)time;
+                return colPacket.BasePoint + colPacket.Velocity;
             }
 
-            Console.WriteLine("COLLISION!!, Collision Position:" + Vector3.Multiply(colPacket.IntersectionPoint, colPacket.ERadius) + " | Camera position:" + colPacket.R3Position);
+            //Console.WriteLine("COLLISION!!, Collision Position:" + Vector3.Multiply(colPacket.IntersectionPoint, colPacket.ERadius) + " | Camera position:" + colPacket.R3Position);
 
-            Console.WriteLine("Player velocity is " + -(Velocity + Position));
+            //Console.WriteLine("Player velocity is " + -(Velocity + Position));
 
-            Vector3 DestPoint = Position + Velocity*(float) time;
-            Vector3 NewBasePoint = Position;
+            Vector3 DestPoint = colPacket.BasePoint + colPacket.Velocity;
+            Vector3 NewBasePoint = colPacket.BasePoint;
 
             // only update if we are not already very close
             // and if so we only move very close to intersection..not
             // to the exact spot.
             if (colPacket.NearestDistance >= veryCloseDistance)
             {
-                Vector3 v = Velocity * (float) time;
+                Vector3 v = colPacket.Velocity;
                 v.Normalize();
                 v = v * (float)(colPacket.NearestDistance - veryCloseDistance);
                 NewBasePoint = colPacket.BasePoint + v;
@@ -122,7 +122,7 @@ namespace Revolution.Core
             SlidePlaneNormal.Normalize();
             Plane SlidingPlane = new Plane(SlidPlaneOrigin, SlidePlaneNormal);
 
-            Vector3 NewDestinationPoint = DestPoint - (float)SlidingPlane.SignedDistanceTo(DestPoint)*SlidePlaneNormal;
+            Vector3 NewDestinationPoint = DestPoint - Vector3.Multiply(SlidePlaneNormal, (float)SlidingPlane.SignedDistanceTo(DestPoint));
 
             Vector3 NewVelocityVector = NewDestinationPoint - colPacket.IntersectionPoint;
 
@@ -132,9 +132,13 @@ namespace Revolution.Core
             }
             recursion++;
 
-            colPacket.BasePoint = NewBasePoint;
-            colPacket.Velocity = NewVelocityVector;
-            colPacket.FoundCollision = false;
+            var temp = new CollisionPacket();
+            temp.ERadius = colPacket.ERadius;
+
+            temp.R3Position = Vector3.Multiply(NewBasePoint, colPacket.ERadius);
+            temp.R3Velocity = Vector3.Multiply(NewVelocityVector, colPacket.ERadius);
+
+            colPacket = temp;
 
             return CollideWithWorld(time, scene);
         }

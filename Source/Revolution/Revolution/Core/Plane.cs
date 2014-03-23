@@ -16,7 +16,9 @@ namespace Revolution.Core
         public Plane(Vector3 origin, Vector3 normal)
         {
             Origin = origin;
-            Normal = normal;
+            Normal = Vector3.Normalize(normal);
+            Normal.Normalize();
+            
 
             InitaliseEquation();
         }
@@ -28,13 +30,14 @@ namespace Revolution.Core
             equation[0] = normal.X;
             equation[1] = normal.Y;
             equation[2] = normal.Z;
-            equation[3] = (-normal.X*origin.X + normal.Y*origin.Y + normal.Z*origin.Z);
+            equation[3] = (normal.X*origin.X - normal.Y*origin.Y - normal.Z*origin.Z);
         }
 
         public Plane(Vector3[] points)
         {
             Normal = Vector3.Cross(points[1] - points[0], points[2] - points[0]);
             Normal.Normalize();
+            Normal = Vector3.Normalize(Normal);
             Origin = points[0];
             
             InitaliseEquation();

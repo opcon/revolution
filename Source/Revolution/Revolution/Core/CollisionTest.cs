@@ -89,8 +89,8 @@ namespace Revolution.Core
             // We only check front-facing triangles
             // (your choice of course)
 
-            //if (trianglePlane.isFrontFacingTo(colPackage.normalizedVelocity))
-            if (true)
+            if (trianglePlane.IsFrontFacingTo(colPackage.NormalisedVelocity))
+            //if (true)
             {
                 // Get interval of plane intersection:
                 double t0, t1;
@@ -104,7 +104,7 @@ namespace Revolution.Core
                 float normalDotVelocity = Vector3.Dot(trianglePlane.Normal, colPackage.Velocity);
 
                 // if sphere is travelling parrallel to the plane:
-                if (normalDotVelocity == 0.0f)
+                if (normalDotVelocity < 0.001f)
                 {
                     if (Math.Abs(signedDistToTrianglePlane) >= 1.0f)
                     {

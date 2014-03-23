@@ -31,6 +31,7 @@ namespace Revolution.Core
         {
             //return new Vector3(r3.X / collisionPacket.ERadius.X, r3.Y / collisionPacket.ERadius.Y, r3.Z / collisionPacket.ERadius.Z);
             return Vector3.Divide(r3, collisionPacket.ERadius);
+            //return Vector3.Divide(collisionPacket.ERadius, r3);
         }
 
         /// <summary>
