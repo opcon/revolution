@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Input;
+using System;
 
 namespace Revolution.Core
 {
@@ -131,6 +132,7 @@ namespace Revolution.Core
         public static void MouseMoved(MouseMoveEventArgs e)
         {
             MouseDelta += new Vector2(e.XDelta, -e.YDelta);
+            //Console.WriteLine(MouseDelta.ToString());
         }
     }
 }

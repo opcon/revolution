@@ -227,7 +227,7 @@ namespace Revolution.Core
         /// <summary>
         /// Resets the mouse to the center of the screen
         /// </summary>
-        protected void ResetMouse()
+        public void ResetMouse()
         {
             if (m_ParentGame.WindowState == WindowState.Fullscreen)
             {

@@ -14,6 +14,8 @@ using Revolution.Core;
 using Revolution.Core.Loaders;
 using Revolution.Core.Loaders.Microbrush;
 using Polygon = Revolution.Core.Polygon;
+using BEPUphysics;
+using Revolution.Core.AdvancedMovement;
 
 namespace Revolution
 {
@@ -25,7 +27,10 @@ namespace Revolution
         private List<Polygon> MBTest;
         private MicrobrushScene TestScene;
 
-        internal static bool focused = true;
+        Space physicsSpace;
+        CharacterControllerInput controller;
+
+        internal static bool focused = true, fullscreen;
         internal static int WindowHeight, WindowWidth;
         private List<Polygon> PolysToTriangulate = new List<Polygon>();
         private List<Polygon> triPolys = new List<Polygon>();
@@ -33,6 +38,12 @@ namespace Revolution
 
         private Player GamePlayer;
 
+        BEPUphysics.Entities.Prefabs.Capsule PlayerCollision;
+        BEPUphysics.EntityStateManagement.MotionState PlayerMotion;
+
+        Camera testCamera;
+
+        KeyboardState prevKeyboardState = new KeyboardState(); 
 
         /// <summary>Creates a 1600*900 window with the specified title.</summary>
         public Game()
@@ -45,6 +56,8 @@ namespace Revolution
         /// <param name="e">Not used.</param>
         protected override void OnLoad(EventArgs e)
         {
+            this.WindowState = OpenTK.WindowState.Fullscreen;
+
             base.OnLoad(e);
             GL.Light(LightName.Light0, LightParameter.Position, new float[] { 1.0f, 1.0f, -0.5f });
             GL.Light(LightName.Light0, LightParameter.Ambient, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
@@ -82,8 +95,25 @@ namespace Revolution
 
             grid = new Grid();
             //TestScene = new MicrobrushScene(MicrobrushLoader.GetBrushes(MicrobrushLoader.LoadScene(Directories.MapsDirectory + @"\PhysicsTest.mb2.dat")));
-            TestScene = new MicrobrushScene(MicrobrushLoader.GetBrushes(MicrobrushLoader.LoadScene(Directories.MapsDirectory + @"\Physics.mb2.xml")));
+            TestScene = new MicrobrushScene(MicrobrushLoader.GetBrushes(MicrobrushLoader.LoadScene(Directories.MapsDirectory + @"\groundTest.mb2.dat")));
             TestScene.Triangulate();
+
+            testCamera = new Camera(new Vector3(5, 5, 2), 0, 0, BEPUutilities.Matrix.CreatePerspectiveFieldOfViewRH(MathHelper.PiOver4, ClientRectangle.Width / (float) ClientRectangle.Height, .1f, 10000));
+
+            physicsSpace = new Space();
+            physicsSpace.ForceUpdater.Gravity = new Vector3(0f, -9.8f, 0f);
+            TestScene.AddBrushesToPhysicsScene(physicsSpace);
+
+            controller = new CharacterControllerInput(physicsSpace, testCamera);
+
+            PlayerMotion = new BEPUphysics.EntityStateManagement.MotionState();
+
+
+            PlayerCollision = new BEPUphysics.Entities.Prefabs.Capsule(PlayerMotion, 1, 1);
+
+            controller.Activate();
+
+            controller.CharacterController.Down = new Vector3(0, -1, 0);
 
             //collisionTest.ERadius = new Vector3(1, 1, 1);
            
@@ -182,6 +212,8 @@ namespace Revolution
             WindowHeight = this.Height;
             WindowWidth = this.Width;
 
+            fullscreen = this.WindowState == OpenTK.WindowState.Fullscreen;
+
             GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
 
             GameCamera.AspectRatio = (float)Math.Round((double)(ClientRectangle.Width / ClientRectangle.Height), 4);
@@ -207,16 +239,31 @@ namespace Revolution
 
             if (Keyboard[Key.Escape])
                 Exit();
+            if (InputSystem.NewKeys.Contains(Key.Number1))
+            {
+                controller.CharacterController.Down *= -1;
+                physicsSpace.ForceUpdater.Gravity *= -1;
+                testCamera.LockedUp *= -1;
+            }
             //GameCamera.Update(e.Time);
 
-            GamePlayer.Update(e.Time, TestScene);
+            //GamePlayer.Update(e.Time, TestScene);
 
+            physicsSpace.Update((float)e.Time);
 
+            controller.Update((float)e.Time, prevKeyboardState, OpenTK.Input.Keyboard.GetState());
+
+            prevKeyboardState = OpenTK.Input.Keyboard.GetState();
+
+            //testCamera.Pitch(0.001f);
 
             //Console.WriteLine(string.Format("Position is {0}", collisionTest.BasePoint));
             //Console.WriteLine(string.Format("Velocity is {0}", collisionTest.Velocity));
 
-
+            var tmp = InputSystem.MouseDelta;
+            //GameCamera.ResetMouse();
+            InputSystem.MouseDelta = tmp;
+            InputSystem.Update();
         }
 
         /// <summary>
@@ -229,7 +276,9 @@ namespace Revolution
             //GL.Enable(EnableCap.Normalize);
             //GL.Enable(EnableCap.Lighting);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GameCamera.GetModelviewMatrix(out modelview);
+            //GameCamera.GetModelviewMatrix(out modelview);
+
+            modelview = testCamera.ViewMatrix;
 
             //GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.CullFace);
@@ -240,7 +289,7 @@ namespace Revolution
             GL.Light(LightName.Light0, LightParameter.Position, new Vector4(0, 0, 0, 1));
 
             //GL.Translate(-GamePlayer.CameraPos);
-            GL.Translate(-GamePlayer.CameraOffset);
+            //GL.Translate(-GamePlayer.CameraOffset);
             float radius = 1;
             float height = 1;
             byte segments = 50;
@@ -249,16 +298,16 @@ namespace Revolution
             var elements = CalculateElements(radius, height, segments, rings);
 
             //GL.Translate(0, -10, 0);
-            GL.Begin(BeginMode.Triangles);
-            for (int index = elements.Length - 1; index >= 0; index--)
-            {
-                var element = elements[index];
-                var vertex = vertices[element];
-                GL.TexCoord2(vertex.TexCoord);
-                GL.Normal3(vertex.Normal);
-                GL.Vertex3(vertex.Position);
-            }
-            GL.End();
+            //GL.Begin(BeginMode.Triangles);
+            //for (int index = elements.Length - 1; index >= 0; index--)
+            //{
+            //    var element = elements[index];
+            //    var vertex = vertices[element];
+            //    GL.TexCoord2(vertex.TexCoord);
+            //    GL.Normal3(vertex.Normal);
+            //    GL.Vertex3(vertex.Position);
+            //}
+            //GL.End();
 
             GL.LoadMatrix(ref modelview);
             
@@ -288,8 +337,8 @@ namespace Revolution
             GL.Color3(Color.Black);
             GL.Begin(BeginMode.Lines);
             TestScene.DrawNormals(e.Time);
-            GL.Vertex3(GamePlayer.Position);
-            GL.Vertex3((GamePlayer.Velocity + GamePlayer.Position));
+            //GL.Vertex3(GamePlayer.Position);
+            //GL.Vertex3((GamePlayer.Velocity + GamePlayer.Position));
             GL.End();
 
             

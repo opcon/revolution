@@ -9,6 +9,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
 using Plane = Shrinker.Microbrush2.Plane;
+using BEPUphysics;
 
 namespace Revolution.Core.Loaders.Microbrush
 {
@@ -73,6 +74,19 @@ namespace Revolution.Core.Loaders.Microbrush
             foreach (var brush in Brushes)
             {
                 brush.Draw(time);
+            }
+        }
+
+        public void AddBrushesToPhysicsScene(Space sp)
+        {
+            foreach (var b in Brushes)
+            {
+                foreach (var p in b.Polygons)
+                {
+                    //sp.Add(new BEPUphysics.Entities.Prefabs.Triangle(new BEPUutilities.Vector3(p.Points[0].X, p.Points[0].Y, p.Points[0].Z), new BEPUutilities.Vector3(p.Points[1].X, p.Points[1].Y, p.Points[1].Z)
+                    //    ,new BEPUutilities.Vector3(p.Points[2].X, p.Points[2].Y, p.Points[2].Z))); 
+                    sp.Add(new BEPUphysics.Entities.Prefabs.Triangle(p.Points[0], p.Points[1], p.Points[2]));
+                }
             }
         }
 
