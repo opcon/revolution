@@ -105,6 +105,32 @@ namespace Revolution.Core.AdvancedMovement
             }
         }
 
+        public void RotateViewPoint(float a)
+        {
+            Quaternion rot;
+            Quaternion temp;
+            Vector3 modView = new Vector3(viewDirection.X, 0, viewDirection.Z);
+            //Quaternion current;
+            Quaternion.CreateFromAxisAngle(ref modView, a, out rot);
+            //Quaternion.GetQuaternionBetweenNormalizedVectors(ref lockedUp, ref lockedUp, out current);
+            //Quaternion.GetRelativeRotation(ref current, ref q, out rot);
+            Vector3 newLockedUp;
+            Quaternion.Transform(ref lockedUp, ref rot, out newLockedUp);
+
+            LockedUp = newLockedUp;
+        }
+
+        public void RotateToNewLockedUp(Vector3 dest)
+        {
+            var dot = Vector3.Dot(lockedUp, dest);
+            dot /= (dest.Length() * lockedUp.Length());
+            float angle = (float)Math.Acos((double)dot);
+            if (angle < 0.4)
+                LockedUp = dest;
+            else
+                RotateViewPoint(angle * 0.08f);
+        }
+
 
         /// <summary>
         /// Creates a camera.
@@ -197,4 +223,5 @@ namespace Revolution.Core.AdvancedMovement
         }
 
     }
+
 }

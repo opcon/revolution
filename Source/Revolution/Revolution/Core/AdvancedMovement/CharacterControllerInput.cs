@@ -102,19 +102,19 @@ namespace Revolution.Core.AdvancedMovement
 
                 //Collect the movement impulses.
 
-                if (keyboardInput.IsKeyDown(Key.E))
+                if (keyboardInput.IsKeyDown(Key.W))
                 {
                     totalMovement += new Vector2(0, 1);
                 }
-                if (keyboardInput.IsKeyDown(Key.D))
+                if (keyboardInput.IsKeyDown(Key.S))
                 {
                     totalMovement += new Vector2(0, -1);
                 }
-                if (keyboardInput.IsKeyDown(Key.S))
+                if (keyboardInput.IsKeyDown(Key.A))
                 {
                     totalMovement += new Vector2(-1, 0);
                 }
-                if (keyboardInput.IsKeyDown(Key.F))
+                if (keyboardInput.IsKeyDown(Key.D))
                 {
                     totalMovement += new Vector2(1, 0);
                 }
@@ -124,10 +124,10 @@ namespace Revolution.Core.AdvancedMovement
                     CharacterController.HorizontalMotionConstraint.MovementDirection = Vector2.Normalize(totalMovement);
 
 
-                CharacterController.StanceManager.DesiredStance = keyboardInput.IsKeyDown(Key.Z) ? Stance.Crouching : Stance.Standing;
+                CharacterController.StanceManager.DesiredStance = keyboardInput.IsKeyDown(Key.ControlLeft) ? Stance.Crouching : Stance.Standing;
 
                 //Jumping
-                if (previousKeyboardInput.IsKeyUp(Key.A) && keyboardInput.IsKeyDown(Key.A))
+                if (previousKeyboardInput.IsKeyUp(Key.Space) && keyboardInput.IsKeyDown(Key.Space))
                 {
                     CharacterController.Jump();
                 }

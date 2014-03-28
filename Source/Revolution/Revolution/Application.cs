@@ -241,10 +241,21 @@ namespace Revolution
                 Exit();
             if (InputSystem.NewKeys.Contains(Key.Number1))
             {
+                //controller.CharacterController.Down = Vector3.Lerp((Vector3)controller.CharacterController.Down, new Vector3(0, 1, 0), 0.01f);
                 controller.CharacterController.Down *= -1;
-                physicsSpace.ForceUpdater.Gravity *= -1;
+                controller.CharacterController.Body.GravityRotation = BEPUutilities.Matrix3x3.CreateFromAxisAngle(Vector3.UnitX, MathHelper.Pi);
+                //physicsSpace.ForceUpdater.Gravity *= -1;
                 testCamera.LockedUp *= -1;
+                //testCamera.LockedUp = Vector3.Lerp(testCamera.LockedUp, new Vector3(0, 1, 0), 0.01f);
             }
+
+            if (InputSystem.CurrentKeys.Contains(Key.Number2))
+            {
+                testCamera.RotateToNewLockedUp(new Vector3(0, -1, 0));
+                
+            }
+            if (InputSystem.CurrentKeys.Contains(Key.Number3))
+                testCamera.RotateToNewLockedUp(new Vector3(0, 1, 0));
             //GameCamera.Update(e.Time);
 
             //GamePlayer.Update(e.Time, TestScene);

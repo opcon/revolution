@@ -10733,6 +10733,11 @@
              Gets or sets whether or not the entity can be affected by gravity applied by the ForceUpdater.
             </summary>
         </member>
+        <member name="P:BEPUphysics.Entities.Entity.GravityRotation">
+            <summary>
+            Gets or sets the specific rotation of the gravity vector applied to the object.
+            </summary>
+        </member>
         <member name="P:BEPUphysics.Entities.Entity.BufferedStates">
             <summary>
              Gets the buffered states of the entity.  If the Space.BufferedStates manager is enabled,
