@@ -56,7 +56,7 @@ namespace Revolution
         /// <param name="e">Not used.</param>
         protected override void OnLoad(EventArgs e)
         {
-            this.WindowState = OpenTK.WindowState.Fullscreen;
+			//his.WindowState = OpenTK.WindowState.Fullscreen;
 
             base.OnLoad(e);
             GL.Light(LightName.Light0, LightParameter.Position, new float[] { 1.0f, 1.0f, -0.5f });
@@ -114,6 +114,9 @@ namespace Revolution
             controller.Activate();
 
             controller.CharacterController.Down = new Vector3(0, -1, 0);
+
+			controller.CharacterController.HorizontalMotionConstraint.Speed = 13.0f;
+			//controller.CharacterController.HorizontalMotionConstraint.AirSpeed = 40.0f;
 
             //collisionTest.ERadius = new Vector3(1, 1, 1);
            
@@ -212,7 +215,7 @@ namespace Revolution
             WindowHeight = this.Height;
             WindowWidth = this.Width;
 
-            fullscreen = this.WindowState == OpenTK.WindowState.Fullscreen;
+			fullscreen = this.WindowState == OpenTK.WindowState.Fullscreen;
 
             GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
 
@@ -272,7 +275,7 @@ namespace Revolution
             //Console.WriteLine(string.Format("Velocity is {0}", collisionTest.Velocity));
 
             var tmp = InputSystem.MouseDelta;
-            //GameCamera.ResetMouse();
+            GameCamera.ResetMouse();
             InputSystem.MouseDelta = tmp;
             InputSystem.Update();
         }

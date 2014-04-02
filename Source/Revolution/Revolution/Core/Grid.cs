@@ -49,35 +49,35 @@ namespace Revolution.Core
 			GL.Begin(BeginMode.Lines);
             GL.Color3(GridColor);
 
-            for (int gs = -GridSize; gs < 0; gs += (GridSize / GridDetail))
-            {
-                GL.Vertex3(-GridSize, 0.0f, (float)gs);
-                GL.Vertex3(GridSize, 0.0f, (float)gs);
+//            for (int gs = -GridSize; gs < 0; gs += (GridSize / GridDetail))
+//            {
+//                GL.Vertex3(-GridSize, 0.0f, (float)gs);
+//                GL.Vertex3(GridSize, 0.0f, (float)gs);
+//
+//            }
+//
+//            for (int gs = 1; gs <= GridSize; gs += (GridSize / GridDetail))
+//            {
+//                GL.Vertex3(-GridSize, 0.0f, (float)gs);
+//                GL.Vertex3(GridSize, 0.0f, (float)gs);
+//
+//            }
+//
+//            for (int gs = -GridSize; gs < 0; gs += (GridSize / GridDetail))
+//            {
+//
+//                GL.Vertex3((float)gs, 0.0f, -GridSize);
+//                GL.Vertex3((float)gs, 0.0f, GridSize);
+//
+//            }
 
-            }
-
-            for (int gs = 1; gs <= GridSize; gs += (GridSize / GridDetail))
-            {
-                GL.Vertex3(-GridSize, 0.0f, (float)gs);
-                GL.Vertex3(GridSize, 0.0f, (float)gs);
-
-            }
-
-            for (int gs = -GridSize; gs < 0; gs += (GridSize / GridDetail))
-            {
-
-                GL.Vertex3((float)gs, 0.0f, -GridSize);
-                GL.Vertex3((float)gs, 0.0f, GridSize);
-
-            }
-
-            for (int gs = 1; gs <= GridSize; gs += (GridSize / GridDetail))
-            {
-
-                GL.Vertex3((float)gs, 0.0f, -GridSize);
-                GL.Vertex3((float)gs, 0.0f, GridSize);
-
-            }
+//            for (int gs = 1; gs <= GridSize; gs += (GridSize / GridDetail))
+//            {
+//
+//                GL.Vertex3((float)gs, 0.0f, -GridSize);
+//                GL.Vertex3((float)gs, 0.0f, GridSize);
+//
+//            }
 
             //Draw X Line Red
             GL.Color3(Color.Red);

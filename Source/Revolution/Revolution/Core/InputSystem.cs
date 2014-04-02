@@ -24,6 +24,7 @@ namespace Revolution.Core
 
         public static float MouseWheelDelta;
         public static Vector2 MouseDelta;
+		public static Vector2 MousePreviousXY, MouseXY;
 
         #endregion
 
@@ -108,8 +109,10 @@ namespace Revolution.Core
 
         public static void Update()
         {
-            MouseWheelDelta = 0;
-            MouseDelta = Vector2.Zero;
+			MouseWheelDelta = 0;
+			MousePreviousXY = MouseXY;
+			MouseXY = new Vector2(Mouse.GetState().X*0.5f, -Mouse.GetState().Y*0.5f);
+			MouseDelta = Vector2.Subtract (MouseXY, MousePreviousXY);
             PressedChars.Clear();
             PressedButtons.Clear();
             UnHandledButtons.Clear();
@@ -131,7 +134,7 @@ namespace Revolution.Core
 
         public static void MouseMoved(MouseMoveEventArgs e)
         {
-            MouseDelta += new Vector2(e.XDelta, -e.YDelta);
+			//MouseDelta += new Vector2(e.XDelta, -e.YDelta);
             //Console.WriteLine(MouseDelta.ToString());
         }
     }
