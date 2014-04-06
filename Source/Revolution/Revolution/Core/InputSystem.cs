@@ -120,17 +120,6 @@ namespace Revolution.Core
 			MouseWheelDelta += -e.DeltaPrecise;
 		}
 
-		public static void ResetMouse()
-		{
-			if (fullscreen) {
-				Cursor.Position = WindowCenter;
-			}
-			else {
-				Cursor.Position = m_ParentGame.PointToScreen(WindowCenter);
-			}
-
-		}
-
 		public static void MouseMoved(MouseMoveEventArgs e)
 		{
 			//MouseDelta += new Vector2(e.XDelta, -e.YDelta);
