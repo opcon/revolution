@@ -19,6 +19,7 @@ namespace Revolution.Core
         {
             Points = points;
             Visible = true;
+			Colour = Color4.White;
         }
 
         public bool IsColliding { get; set; }
