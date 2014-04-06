@@ -36,7 +36,7 @@ namespace Revolution
 
 		/// <summary>Creates a 1600*900 window with the specified title.</summary>
 		public Game()
-            : base(800, 600, GraphicsMode.Default, "Revolution")
+            : base(1280, 720, GraphicsMode.Default, "Revolution")
 		{
 			VSync = VSyncMode.On;
 		}
