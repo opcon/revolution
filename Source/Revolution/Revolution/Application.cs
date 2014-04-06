@@ -27,12 +27,8 @@ namespace Revolution
 		Space physicsSpace;
 		internal static bool focused = true, fullscreen;
 		internal static int WindowHeight, WindowWidth;
-		private List<Polygon> PolysToTriangulate = new List<Polygon>();
-		private List<Polygon> triPolys = new List<Polygon>();
-		private CollisionPacket collisionTest = new CollisionPacket();
 		private Player GamePlayer;
 		Camera gameCamera;
-		KeyboardState prevKeyboardState = new KeyboardState();
 		bool rotated = false;
 
 		protected Point WindowCenter
