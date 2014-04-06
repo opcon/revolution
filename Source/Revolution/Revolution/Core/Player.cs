@@ -23,8 +23,9 @@ namespace Revolution.Core
 
 			playerController.CharacterController.Down = new Vector3(0, -1, 0);
 			playerController.CharacterController.HorizontalMotionConstraint.Speed = 13.0f;
-            playerController.CharacterController.JumpSpeed = 10;
-            playerController.CharacterController.HorizontalMotionConstraint.AirSpeed = 6.0f;
+            playerController.CharacterController.JumpSpeed = 5;
+            playerController.CharacterController.HorizontalMotionConstraint.AirSpeed = 0.3f;
+            playerController.CharacterController.Body.Mass = 80;
 		}
 
 		public void Update(double time)
