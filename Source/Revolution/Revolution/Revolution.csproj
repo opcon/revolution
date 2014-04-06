@@ -52,6 +52,9 @@
     <Reference Include="BEPUphysics">
       <HintPath>..\..\Resources\Libraries\BEPUphysics.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK">
+      <HintPath>..\packages\OpenTK.1.1.1508.5724\lib\NET40\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="Poly2Tri">
       <HintPath>..\..\Resources\Libraries\Poly2Tri.dll</HintPath>
     </Reference>
@@ -62,9 +65,6 @@
       <HintPath>..\..\Resources\Libraries\BEPUutilities.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="OpenTK">
-      <HintPath>..\packages\OpenTK.1.1.1508.5724\lib\NET40\OpenTK.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
@@ -120,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="schema\mb2Scene.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -127,7 +128,6 @@
     <None Include="OpenTK.dll.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
