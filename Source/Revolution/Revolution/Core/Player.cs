@@ -11,7 +11,9 @@ namespace Revolution.Core
 {
 	class Player
 	{
-		CharacterControllerInput playerController;
+		public CharacterControllerInput playerController;
+
+        OpenTK.Input.KeyboardState prevKeyboardState;
 
 		public Player(Camera c, Space s)
 		{
@@ -21,11 +23,15 @@ namespace Revolution.Core
 
 			playerController.CharacterController.Down = new Vector3(0, -1, 0);
 			playerController.CharacterController.HorizontalMotionConstraint.Speed = 13.0f;
+            playerController.CharacterController.JumpSpeed = 10;
+            playerController.CharacterController.HorizontalMotionConstraint.AirSpeed = 6.0f;
 		}
 
 		public void Update(double time)
 		{
+            playerController.Update((float)time, prevKeyboardState, OpenTK.Input.Keyboard.GetState());
 
+            prevKeyboardState = OpenTK.Input.Keyboard.GetState();
 		}
 	}
 }
