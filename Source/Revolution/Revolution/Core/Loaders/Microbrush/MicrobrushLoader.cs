@@ -78,8 +78,7 @@ namespace Revolution.Core.Loaders.Microbrush
 					//sp.Add(new BEPUphysics.Entities.Prefabs.Triangle(new BEPUutilities.Vector3(p.Points[0].X, p.Points[0].Y, p.Points[0].Z), new BEPUutilities.Vector3(p.Points[1].X, p.Points[1].Y, p.Points[1].Z)
 					//    ,new BEPUutilities.Vector3(p.Points[2].X, p.Points[2].Y, p.Points[2].Z))); 
 
-					var t = new BEPUphysics.Entities.Prefabs.Triangle (p.Points [0], p.Points [1], p.Points [2])
-					{ Material = new BEPUphysics.Materials.Material (0.5f, 1f, 1.0f) };
+                    var t = new BEPUphysics.Entities.Prefabs.Triangle(p.Points[0], p.Points[1], p.Points[2]);
 					sp.Add (t);
 				}
 			}

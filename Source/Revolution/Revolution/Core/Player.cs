@@ -21,7 +21,9 @@ namespace Revolution.Core
 
 			playerController.Activate();
 
+            //TODO Sort out friction on ground surface - far too low at the moment and adjusting LinearDamping is a rough hack
 			playerController.CharacterController.Down = new Vector3(0, -1, 0);
+            playerController.CharacterController.Body.LinearDamping = 0.7f;
 			playerController.CharacterController.HorizontalMotionConstraint.Speed = 13.0f;
             playerController.CharacterController.JumpSpeed = 5;
             playerController.CharacterController.HorizontalMotionConstraint.AirSpeed = 0.3f;
