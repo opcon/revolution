@@ -76,7 +76,7 @@ namespace Revolution
 			Mouse.Move += (o, args) => InputSystem.MouseMoved(args);
 
 			grid = new Grid();
-			TestScene = new MicrobrushScene(MicrobrushLoader.GetBrushes(MicrobrushLoader.LoadScene(Directories.MapsDirectory + @"\Office.mb2.dat")));
+			TestScene = new MicrobrushScene(MicrobrushLoader.GetBrushes(MicrobrushLoader.LoadScene(Directories.MapsDirectory + @"\groundTest.mb2.dat")));
 			TestScene.Triangulate();
 
 			gameCamera = new Camera(new Vector3(5, 5, 2), 0, 0, BEPUutilities.Matrix.CreatePerspectiveFieldOfViewRH(MathHelper.PiOver4, ClientRectangle.Width / (float)ClientRectangle.Height, .1f, 10000));
@@ -84,9 +84,15 @@ namespace Revolution
 			physicsSpace = new Space();
 			physicsSpace.ForceUpdater.Gravity = new Vector3(0f, -9.8f, 0f);
 
+            var bph = new BEPUphysics.BroadPhaseSystems.SortAndSweep.SortAndSweep1D();
+            physicsSpace.BroadPhase = bph;
+            bph.Enabled = true;
+
 			TestScene.AddBrushesToPhysicsScene(physicsSpace);
 
-			GamePlayer = new Player(physicsSpace, gameCamera);
+			GamePlayer = new Player(gameCamera, physicsSpace);
+
+            CursorVisible = false;
 
 		}
 
@@ -180,11 +186,15 @@ namespace Revolution
 
 			GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
 
+            projection = Matrix4.CreatePerspectiveFieldOfView((float)(90 * Math.PI / 180.0), (float)Math.Round((double)(ClientRectangle.Width/ClientRectangle.Height), 4), 0.1f, 64000f);
+
 			GL.MatrixMode(MatrixMode.Modelview);
 			GL.LoadMatrix(ref modelview);
 
 			GL.MatrixMode(MatrixMode.Projection);
 			GL.LoadMatrix(ref projection);
+
+
 
 		}
 
@@ -199,8 +209,8 @@ namespace Revolution
 			if (Keyboard[Key.Escape])
 				Exit();
 			if (InputSystem.NewKeys.Contains(Key.Number1)) {
-				controller.CharacterController.Down *= -1;
-				controller.CharacterController.Body.GravityRotation = BEPUutilities.Matrix3x3.CreateFromAxisAngle(Vector3.UnitX, (!rotated) ? MathHelper.Pi : 0);
+				GamePlayer.playerController.CharacterController.Down *= -1;
+                //GamePlayer.playerController.CharacterController.Body.GravityRotation = BEPUutilities.Matrix3x3.CreateFromAxisAngle(Vector3.UnitX, (!rotated) ? MathHelper.Pi : 0);
 				gameCamera.LockedUp *= -1;
 				rotated = !rotated;
 			}
@@ -214,11 +224,7 @@ namespace Revolution
 
 			physicsSpace.Update((float)e.Time);
 
-			controller.Update((float)e.Time, prevKeyboardState, OpenTK.Input.Keyboard.GetState());
-
-			GamePlayer.Update();
-
-			prevKeyboardState = OpenTK.Input.Keyboard.GetState();
+			GamePlayer.Update(e.Time);
 
 			ResetMouse();
 			InputSystem.Update();
@@ -291,17 +297,17 @@ namespace Revolution
 			TestScene.Draw(e.Time);
 			GL.End();
 			GL.Color3(Color.Black);
-			GL.Begin(BeginMode.Lines);
-			TestScene.DrawNormals(e.Time);
+			//GL.Begin(BeginMode.Lines);
+			//TestScene.DrawNormals(e.Time);
 			//GL.Vertex3(GamePlayer.Position);
 			//GL.Vertex3((GamePlayer.Velocity + GamePlayer.Position));
-			GL.End();
+			//GL.End();
 
             
 			SwapBuffers();
 		}
 
-		public static void ResetMouse()
+		public void ResetMouse()
 		{
 			if (fullscreen) {
 				System.Windows.Forms.Cursor.Position = WindowCenter;
