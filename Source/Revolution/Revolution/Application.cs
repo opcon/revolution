@@ -288,20 +288,9 @@ namespace Revolution
 			//GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
 			//GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { 0.0f, 0.0f, 0.0f, 1.0f });
 
-
-			//if (collisionTest.FoundCollision)
-			//{
-			//    GL.Color3(Color.Red);
-			//}
-
 			TestScene.Draw(e.Time);
 			GL.End();
 			GL.Color3(Color.Black);
-			//GL.Begin(BeginMode.Lines);
-			//TestScene.DrawNormals(e.Time);
-			//GL.Vertex3(GamePlayer.Position);
-			//GL.Vertex3((GamePlayer.Velocity + GamePlayer.Position));
-			//GL.End();
 
             
 			SwapBuffers();
