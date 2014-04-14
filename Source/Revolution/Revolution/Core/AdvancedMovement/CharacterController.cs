@@ -319,6 +319,8 @@ namespace Revolution.Core.AdvancedMovement
                 //The default values for InteractionProperties is all zeroes- zero friction, zero bounciness.
                 //That's exactly how we want the character to behave when hitting objects.
                 collidablePair.UpdateMaterialProperties(new InteractionProperties());
+				collidablePair.UpdateMaterialProperties(new InteractionProperties() {KineticFriction = 0.05f
+				});
             }
         }
 
