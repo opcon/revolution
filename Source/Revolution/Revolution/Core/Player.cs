@@ -22,6 +22,7 @@ namespace Revolution.Core
 		Vector3 initialUp = Vector3.Zero;
 		Vector3 initialDown = Vector3.Zero;
 		public Vector3 CurrentUp = Vector3.UnitY;
+		public Vector3 lastRayHitNormal = -Vector3.UnitY;
 
 		public Player(Camera c, Space s)
 		{
@@ -66,6 +67,17 @@ namespace Revolution.Core
 			CurrentUp = playerController.Camera.LockedUp;
 
 			prevKeyboardState = OpenTK.Input.Keyboard.GetState();
+
+			BEPUutilities.RayHit result;
+
+			var r = new BEPUutilities.Ray(playerController.Camera.Position + playerController.Camera.ViewDirection, playerController.CharacterController.ViewDirection);
+
+			if (playerController.CharacterController.QueryManager.RayCastAgainstSpace(r, 900f, out result))
+			{
+				Console.WriteLine("Ray Hit!");
+				lastRayHitNormal = result.Normal;
+			}
+			//if (result.HitData.Location != null) Console.WriteLine(result.HitData.T);
 		}
 
 		public void BeginRotation(Vector3 dir)
