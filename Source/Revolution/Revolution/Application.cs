@@ -175,12 +175,8 @@ namespace Revolution
 					GamePlayer.BeginRotation(Vector3.UnitY);
 			}
 
-			if (InputSystem.CurrentKeys.Contains(Key.Number2)) {
-				gameCamera.RotateToNewLockedUp(new Vector3(0, -1, 0));
-                
-			}
 			if (InputSystem.CurrentKeys.Contains(Key.Number3))
-				gameCamera.RotateToNewLockedUp(new Vector3(0, 1, 0));
+				GamePlayer.BeginRotation(GamePlayer.lastRayHitNormal);
 
 			physicsSpace.Update((float)e.Time);
 
