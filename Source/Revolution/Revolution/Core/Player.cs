@@ -33,7 +33,7 @@ namespace Revolution.Core
 			playerController.CharacterController.Down = new Vector3(0, -1, 0);
 			//playerController.CharacterController.Body.LinearDamping = 0.7f;
 			playerController.CharacterController.HorizontalMotionConstraint.Speed = 7.0f;
-			playerController.CharacterController.JumpSpeed = 7;
+			playerController.CharacterController.JumpSpeed = 9;
 			playerController.CharacterController.HorizontalMotionConstraint.AirSpeed = 1.0f;
 			playerController.CharacterController.Body.Mass = 80;
 			playerController.CharacterController.StepManager.MaximumStepHeight = 0.5f;
