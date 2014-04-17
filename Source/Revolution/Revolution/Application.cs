@@ -38,7 +38,7 @@ namespace Revolution
 		public Game()
             : base(1280, 720, GraphicsMode.Default, "Revolution")
 		{
-			VSync = VSyncMode.On;
+			VSync = VSyncMode.Off;
 		}
 
 		/// <summary>Load resources here.</summary>
