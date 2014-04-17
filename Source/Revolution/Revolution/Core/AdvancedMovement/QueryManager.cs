@@ -104,6 +104,39 @@ namespace Revolution.Core.AdvancedMovement
 
         }
 
+		/// <summary>
+		/// Computes the intersection, if any, between a ray and the objects in the character's bounding box.
+		/// </summary>
+		/// <param name="ray">Ray to test.</param>
+		/// <param name="length">Length of the ray to use in units of the ray's length.</param>
+		/// <param name="earliestHit">Earliest intersection location and information.</param>
+		/// <returns>Whether or not the ray hit anything.</returns>
+		public bool RayCastAgainstSpace(Ray ray, float length, out RayHit earliestHit)
+		{
+			earliestHit = new RayHit();
+			earliestHit.T = float.MaxValue;
+			foreach (var e in character.Space.Entities)
+			{
+				if (e == this.character.Body) continue;
+				var collidable = e.CollisionInformation;
+				//Check to see if the collidable is hit by the ray.
+				float? t = ray.Intersects(collidable.BoundingBox);
+				if (t != null && t < length)
+				{
+					//Is it an earlier hit than the current earliest?
+					RayHit hit;
+					if (collidable.RayCast(ray, length, SupportRayFilter, out hit) && hit.T < earliestHit.T)
+					{
+						earliestHit = hit;
+					}
+				}
+			}
+			if (earliestHit.T == float.MaxValue)
+				return false;
+			return true;
+
+		}
+
         /// <summary>
         /// Computes the intersection, if any, between a ray and the objects in the character's bounding box.
         /// </summary>
