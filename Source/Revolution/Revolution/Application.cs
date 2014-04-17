@@ -183,10 +183,11 @@ namespace Revolution
 				gameCamera.RotateToNewLockedUp(new Vector3(0, 1, 0));
 
 			physicsSpace.Update((float)e.Time);
-
+            
 			GamePlayer.Update(e.Time);
 
-			ResetMouse();
+            if (this.Focused)
+			    ResetMouse();
 			InputSystem.Update();
 		}
 
