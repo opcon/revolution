@@ -16,7 +16,7 @@ namespace Revolution.Core
         public Vector3 NormalisedNormal = Vector3.Zero;
         public bool RandomColour = true;
 
-        public Polygon(Vector3[] points, bool randomColour = true)
+        public Polygon(Vector3[] points, bool randomColour = false)
         {
             Points = points;
             Visible = true;
