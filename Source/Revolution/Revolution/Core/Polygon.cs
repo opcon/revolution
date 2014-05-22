@@ -14,12 +14,20 @@ namespace Revolution.Core
         public Vector3[] Points;
         public Vector3 Normal = Vector3.Zero;
         public Vector3 NormalisedNormal = Vector3.Zero;
+        public bool RandomColour = true;
 
-        public Polygon(Vector3[] points)
+        public Polygon(Vector3[] points, bool randomColour = true)
         {
             Points = points;
             Visible = true;
-			Colour = Color4.White;
+            if (RandomColour)
+            {
+                Colour = Color.FromArgb(Utilities.RandomGenerator.Next(0, 255), Utilities.RandomGenerator.Next(0, 255), Utilities.RandomGenerator.Next(0, 255));
+            }
+            else
+            {
+			    Colour = Color4.White;
+            }
         }
 
         public bool IsColliding { get; set; }
@@ -36,7 +44,8 @@ namespace Revolution.Core
             if (!Visible) return;
             if (IsColliding)
                 Colour = Color4.Red;
-            GL.Color3((Color) Colour);
+            
+            GL.Color3((Color)Colour);
             foreach (var p in Points)
             {
                 GL.Vertex3(p);

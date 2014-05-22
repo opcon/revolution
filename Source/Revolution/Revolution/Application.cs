@@ -91,6 +91,7 @@ namespace Revolution
 			GL.Enable(EnableCap.Light0);
 			GL.Enable(EnableCap.DepthTest);
 
+            GL.Disable(EnableCap.Lighting);
 			GL.ClearColor(Color.CornflowerBlue);
 
 			Keyboard.KeyDown += (o, args) => InputSystem.KeyDown(args);
@@ -212,7 +213,7 @@ namespace Revolution
 
 			GL.Enable(EnableCap.Light0);
 			GL.Color3(Color.White);
-			GL.Enable(EnableCap.Lighting);
+			//GL.Enable(EnableCap.Lighting);
 			GL.ShadeModel(ShadingModel.Flat);
 			GL.Begin(BeginMode.Triangles);
 
