@@ -215,7 +215,8 @@ namespace Revolution
 
 			GL.Enable(EnableCap.Light0);
 			GL.Color3(Color.White);
-			GL.Enable(EnableCap.Lighting);
+			//GL.Enable(EnableCap.Lighting);
+            GL.Disable(EnableCap.Lighting);
             GL.ShadeModel(ShadingModel.Flat);
 			GL.Begin(BeginMode.Triangles);
 
