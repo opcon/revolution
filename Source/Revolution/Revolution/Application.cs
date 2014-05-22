@@ -60,7 +60,7 @@ namespace Revolution
 				1.0f
 			});
 			GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] {
-				1f,
+                1f,
 				1f,
 				1f,
 				1.0f
@@ -89,7 +89,8 @@ namespace Revolution
 			GL.Enable(EnableCap.ColorMaterial);
 			GL.Enable(EnableCap.Lighting);
 			GL.Enable(EnableCap.Light0);
-			GL.Enable(EnableCap.DepthTest);
+
+            GL.Enable(EnableCap.DepthTest);
 
 			GL.ClearColor(Color.CornflowerBlue);
 
@@ -175,7 +176,7 @@ namespace Revolution
 					GamePlayer.BeginRotation(Vector3.UnitY);
 			}
 
-			if (InputSystem.CurrentKeys.Contains(Key.Number3))
+            if (InputSystem.CurrentKeys.Contains(Key.Q))
 				GamePlayer.BeginRotation(GamePlayer.lastRayHitNormal);
 
 			physicsSpace.Update((float)e.Time);
@@ -208,12 +209,14 @@ namespace Revolution
             
 			grid.Render(e.Time);
 
+            GamePlayer.Draw(e.Time);
+
 
 
 			GL.Enable(EnableCap.Light0);
 			GL.Color3(Color.White);
 			GL.Enable(EnableCap.Lighting);
-			GL.ShadeModel(ShadingModel.Flat);
+            GL.ShadeModel(ShadingModel.Flat);
 			GL.Begin(BeginMode.Triangles);
 
 			GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, new float[] {
