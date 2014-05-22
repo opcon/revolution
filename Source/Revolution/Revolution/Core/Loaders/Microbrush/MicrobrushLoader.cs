@@ -76,9 +76,6 @@ namespace Revolution.Core.Loaders.Microbrush
 		{
 			foreach (var b in Brushes) {
 				foreach (var p in b.Polygons) {
-					//sp.Add(new BEPUphysics.Entities.Prefabs.Triangle(new BEPUutilities.Vector3(p.Points[0].X, p.Points[0].Y, p.Points[0].Z), new BEPUutilities.Vector3(p.Points[1].X, p.Points[1].Y, p.Points[1].Z)
-					//    ,new BEPUutilities.Vector3(p.Points[2].X, p.Points[2].Y, p.Points[2].Z))); 
-
                     var t = new BEPUphysics.Entities.Prefabs.Triangle(p.Points[0], p.Points[1], p.Points[2]);
 					sp.Add (t);
 				}
@@ -193,7 +190,7 @@ namespace Revolution.Core.Loaders.Microbrush
 					}
 
 				}
-				Brushes [index].Polygons = new List<Polygon> (TriangulatedPolygons);
+				Brushes[index].Polygons = new List<Polygon> (TriangulatedPolygons);
 			}
 		}
 
