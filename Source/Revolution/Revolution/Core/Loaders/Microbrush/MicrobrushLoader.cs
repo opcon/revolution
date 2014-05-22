@@ -10,6 +10,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
 using Plane = Shrinker.Microbrush2.Plane;
 using BEPUphysics;
+using System.Drawing;
 
 namespace Revolution.Core.Loaders.Microbrush
 {
@@ -36,7 +37,7 @@ namespace Revolution.Core.Loaders.Microbrush
 			return ret;
 		}
 
-		public static List<Polygon> GetPolygons (Brush b)
+		public static List<Polygon> GetPolygons (Shrinker.Microbrush2.Brush b)
 		{
 			var ret = new List<Polygon> ();
 			foreach (var p in b.Planes) {
@@ -207,15 +208,21 @@ namespace Revolution.Core.Loaders.Microbrush
 	public class MicrobrushBrush
 	{
 		public List<Polygon> Polygons;
+        public Color4 Colour;
 
-		public MicrobrushBrush (List<Polygon> polygons)
+		public MicrobrushBrush (List<Polygon> polygons, bool randomColour = true)
 		{
 			Polygons = polygons;
+            if (randomColour)
+            {
+                Colour = Color.FromArgb(Utilities.RandomGenerator.Next(0, 255), Utilities.RandomGenerator.Next(0, 255), Utilities.RandomGenerator.Next(0, 255));
+            }
 		}
 
 		public void Draw (double time)
 		{
 			foreach (var p in Polygons) {
+                p.Colour = Colour;
 				p.Draw (time);
 			}
 		}
